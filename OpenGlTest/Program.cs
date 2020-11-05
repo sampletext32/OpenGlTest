@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using SFML.Audio;
 using SFML.Graphics;
 using SFML.Window;
@@ -83,10 +78,10 @@ namespace OpenGlTest
             byte[] bytes = new byte[bitmap.Width * bitmap.Height * 4];
             for (var i = 0; i < bitmap.Bits.Length; i++)
             {
-                bytes[i + 0] = (byte)(bitmap.Bits[i] >> 16 & 0xFF);
-                bytes[i + 1] = (byte)(bitmap.Bits[i] >> 8 & 0xFF);
-                bytes[i + 2] = (byte)(bitmap.Bits[i] >> 0 & 0xFF);
-                bytes[i + 3] = (byte)(0xFF);
+                bytes[i * 4 + 0] = (byte)(bitmap.Bits[i] >> 16 & 0xFF);
+                bytes[i * 4 + 1] = (byte)(bitmap.Bits[i] >> 8 & 0xFF);
+                bytes[i * 4 + 2] = (byte)(bitmap.Bits[i] >> 0 & 0xFF);
+                bytes[i * 4 + 3] = (byte)(0xFF);
             }
 
             return bytes;
