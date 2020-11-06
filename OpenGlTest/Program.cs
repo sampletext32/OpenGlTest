@@ -44,6 +44,9 @@ namespace OpenGlTest
             waveformParameters["portions"] = 2;
             new TrueWaveformProvider().RecreateAsync(waveformParameters);
 
+            RectangleShape rect = new RectangleShape(new Vector2f(1, 600));
+            rect.FillColor = Color.White;
+
             Texture texture = new Texture(800, 600);
             Sprite sprite = new Sprite(texture);
 
@@ -57,6 +60,7 @@ namespace OpenGlTest
                 window.Clear(Color.Black);
 
                 texture.Update(BitmapToBytes(waveformBitmap));
+                rect.Position = new Vector2f(music.PlayingOffset.AsSeconds() / music.Duration.AsSeconds() * 800, 0);
 
                 var milliseconds = music.PlayingOffset.AsMilliseconds();
                 var seconds = milliseconds / 1000;
@@ -69,6 +73,7 @@ namespace OpenGlTest
 
                 window.Draw(sprite);
                 window.Draw(text);
+                window.Draw(rect);
                 window.Display();
             }
         }
