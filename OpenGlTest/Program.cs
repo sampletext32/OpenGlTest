@@ -1,21 +1,24 @@
 ﻿using System.Collections.Generic;
+using AudioLib;
+using GraphicsLib;
 using SFML.Audio;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
-using WavVisualize;
 
 namespace OpenGlTest
 {
     class Program
     {
         private static RenderWindow window;
+        private static Music music;
 
         static void Main(string[] args)
         {
             window = new RenderWindow(new VideoMode(800, 600), "SFML running in .NET Core");
             window.Closed += (_, __) => window.Close();
             window.Resized += (_, e) => { window.SetView(new View(new FloatRect(0, 0, e.Width, e.Height))); };
+            window.MouseButtonPressed += Window_MouseButtonPressed;
             window.KeyPressed += Window_KeyPressed;
             window.SetVerticalSyncEnabled(true);
             window.SetActive(false);
@@ -26,33 +29,33 @@ namespace OpenGlTest
 
             var bytes = FileLoader.LoadAny("file.mp3").Result;
 
-            WavFileData wavFileData = new WavFileData(bytes);
+            WavFile wavFile = new WavFile(bytes);
 
-            DirectBitmap waveformBitmap = new DirectBitmap(800, 600);
-            waveformBitmap.Clear();
+            var waveformTexture = new CpuTexture(800, 600);
+
+            waveformTexture.Clear(0u);
 
             var waveformParameters = new Dictionary<string, object>();
 
-            waveformParameters["directBitmap"] = waveformBitmap;
-            waveformParameters["leftColor"] = (int)(0x7cfc00 | (0xFF << 24)); //LawnGreen
-            waveformParameters["rightColor"] = (int)(0xff4500 | (0xFF << 24)); //OrangeRed
-            waveformParameters["leftChannel"] = wavFileData.ChannelsSamples[0];
-            waveformParameters["rightChannel"] = wavFileData.ChannelsSamples[1];
-            waveformParameters["samplesCount"] = wavFileData.samplesCount;
+            waveformParameters["texture"] = waveformTexture;
+            waveformParameters["leftColor"] = 0x7cfc00FFu; //LawnGreen
+            waveformParameters["rightColor"] = 0xff4500FFu; //OrangeRed
+            waveformParameters["leftChannel"] = wavFile.ChannelsSamples[0];
+            waveformParameters["rightChannel"] = wavFile.ChannelsSamples[1];
+            waveformParameters["samplesCount"] = wavFile.samplesCount;
             waveformParameters["verticalScale"] = 0.9f;
             waveformParameters["takeRate"] = 3;
             waveformParameters["iterations"] = 2;
-            waveformParameters["splitWorkFirst"] = false;
-            waveformParameters["portions"] = 2;
+            waveformParameters["splitWorkFirst"] = true;
+            waveformParameters["portions"] = 10;
             new TrueWaveformProvider().RecreateAsync(waveformParameters);
 
             RectangleShape rect = new RectangleShape(new Vector2f(1, 600));
             rect.FillColor = Color.White;
 
-            Texture texture = new Texture(800, 600);
-            Sprite sprite = new Sprite(texture);
+            Sprite sprite = new Sprite(waveformTexture.SfmlTexture.Value);
 
-            var music = new Music(bytes);
+            music = new Music(bytes);
             music.Play();
 
             window.SetActive(true);
@@ -60,8 +63,8 @@ namespace OpenGlTest
             {
                 window.DispatchEvents();
                 window.Clear(Color.Black);
+                waveformTexture.UpdateSfmlTexture();
 
-                texture.Update(BitmapToBytes(waveformBitmap));
                 rect.Position = new Vector2f(music.PlayingOffset.AsSeconds() / music.Duration.AsSeconds() * 800, 0);
 
                 var milliseconds = music.PlayingOffset.AsMilliseconds();
@@ -80,19 +83,27 @@ namespace OpenGlTest
             }
         }
 
-        private static byte[] BitmapToBytes(DirectBitmap bitmap)
+        private static void Window_MouseButtonPressed(object sender, MouseButtonEventArgs e)
         {
-            byte[] bytes = new byte[bitmap.Width * bitmap.Height * 4];
-            for (var i = 0; i < bitmap.Bits.Length; i++)
+            if (e.Button == Mouse.Button.Left)
             {
-                bytes[i * 4 + 0] = (byte)(bitmap.Bits[i] >> 16 & 0xFF);
-                bytes[i * 4 + 1] = (byte)(bitmap.Bits[i] >> 8 & 0xFF);
-                bytes[i * 4 + 2] = (byte)(bitmap.Bits[i] >> 0 & 0xFF);
-                bytes[i * 4 + 3] = (byte)(0xFF);
+                music.PlayingOffset = Time.FromSeconds((float)e.X / window.Size.X * music.Duration.AsSeconds());
             }
-
-            return bytes;
         }
+
+        // private static byte[] BitmapToBytes(DirectBitmap bitmap)
+        // {
+        //     byte[] bytes = new byte[bitmap.Width * bitmap.Height * 4];
+        //     for (var i = 0; i < bitmap.Bits.Length; i++)
+        //     {
+        //         bytes[i * 4 + 0] = (byte)(bitmap.Bits[i] >> 16 & 0xFF);
+        //         bytes[i * 4 + 1] = (byte)(bitmap.Bits[i] >> 8 & 0xFF);
+        //         bytes[i * 4 + 2] = (byte)(bitmap.Bits[i] >> 0 & 0xFF);
+        //         bytes[i * 4 + 3] = (byte)(0xFF);
+        //     }
+        // 
+        //     return bytes;
+        // }
 
         private static void Window_KeyPressed(object sender, KeyEventArgs e)
         {
