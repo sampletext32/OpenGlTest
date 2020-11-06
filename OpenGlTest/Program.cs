@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SFML.Audio;
 using SFML.Graphics;
+using SFML.System;
 using SFML.Window;
 using WavVisualize;
 
@@ -14,6 +15,7 @@ namespace OpenGlTest
         {
             window = new RenderWindow(new VideoMode(800, 600), "SFML running in .NET Core");
             window.Closed += (_, __) => window.Close();
+            window.Resized += (_, e) => { window.SetView(new View(new FloatRect(0, 0, e.Width, e.Height))); };
             window.KeyPressed += Window_KeyPressed;
             window.SetVerticalSyncEnabled(true);
             window.SetActive(false);
