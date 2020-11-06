@@ -72,6 +72,11 @@ namespace GraphicsLib
                 }
             }
         }
+
+        public byte[] GetBytes()
+        {
+            return Pixels;
+        }
     }
 
     public class CpuTextureSafe : CpuTexture

@@ -5,19 +5,24 @@ using SFML.Graphics;
 
 namespace ComponentsLib
 {
-    public class WaveformComponent : Component
+    public class WaveformComponent : ImageComponent
     {
-        public byte[] WavBytes { get; private set; }
-        public WavFile WavFile { get; private set; }
-
+        private TrueWaveformProvider _waveformProvider;
         public WaveformComponent(uint locX, uint locY, uint sizeX, uint sizeY) : base(locX, locY, sizeX, sizeY)
         {
         }
 
+        public byte[] WavBytes { get; private set; }
+        public WavFile WavFile { get; private set; }
+
         public override void Update()
         {
             base.Update();
-            Texture.UpdateSfmlTexture();
+        }
+
+        public override void UpdateSfmlComponent()
+        {
+            base.UpdateSfmlComponent();
         }
 
         public override void Render(RenderTarget target)
@@ -40,7 +45,10 @@ namespace ComponentsLib
             waveformParameters["iterations"] = 2;
             waveformParameters["splitWorkFirst"] = true;
             waveformParameters["portions"] = 10;
-            new TrueWaveformProvider().RecreateAsync(waveformParameters);
+
+            _waveformProvider?.Stop();
+            _waveformProvider = new TrueWaveformProvider();
+            _waveformProvider.RecreateAsync(waveformParameters);
         }
 
         public override void Init()

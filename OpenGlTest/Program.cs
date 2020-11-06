@@ -36,15 +36,14 @@ namespace OpenGlTest
 
             components = new List<Component>();
 
-            Font font = new Font("arial.ttf");
-            Text text = new Text("", font);
-            text.FillColor = Color.White;
-
-            RectangleShape rect = new RectangleShape(new Vector2f(1, 600));
-            rect.FillColor = Color.White;
-
             WaveformComponent waveformComponent = new WaveformComponent(0, 0, 800, 600);
             components.Add(waveformComponent);
+
+            TextComponent textComponent = new TextComponent(0, 0, 0, 24);
+            components.Add(textComponent);
+            
+            RectangleShape rect = new RectangleShape(new Vector2f(1, 600));
+            rect.FillColor = Color.White;
 
             components.ForEach(c => c.Init());
 
@@ -57,8 +56,6 @@ namespace OpenGlTest
                 window.DispatchEvents();
                 window.Clear(Color.Black);
 
-                components.ForEach(c => c.Update());
-
                 rect.Position = new Vector2f(music.PlayingOffset.AsSeconds() / music.Duration.AsSeconds() * window.Size.X, 0);
 
                 var milliseconds = music.PlayingOffset.AsMilliseconds();
@@ -68,10 +65,11 @@ namespace OpenGlTest
                 milliseconds %= 1000;
                 seconds %= 60;
 
-                text.DisplayedString = $"{hours:00}:{minutes:00}:{seconds:00}:{milliseconds:0000}";
+                textComponent.Text = $"{hours:00}:{minutes:00}:{seconds:00}:{milliseconds:0000}";
 
+                components.ForEach(c => c.Update());
+                components.ForEach(c => c.UpdateSfmlComponent());
                 components.ForEach(c => c.Render(window));
-                window.Draw(text);
                 window.Draw(rect);
                 window.Display();
             }

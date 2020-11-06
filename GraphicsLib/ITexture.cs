@@ -12,7 +12,6 @@ namespace GraphicsLib
 
         public uint this[uint x, uint y] { get; set; }
         public void Clear(uint color);
-        public Lazy<Texture> SfmlTexture { get; }
-        public void UpdateSfmlTexture();
+        public byte[] GetBytes();
     }
 }
