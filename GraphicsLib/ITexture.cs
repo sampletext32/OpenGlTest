@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using SFML.Graphics;
 
 namespace GraphicsLib
 {
@@ -10,5 +11,8 @@ namespace GraphicsLib
         public uint SizeY { get; }
 
         public uint this[uint x, uint y] { get; set; }
+        public void Clear(uint color);
+        public Lazy<Texture> SfmlTexture { get; }
+        public void UpdateSfmlTexture();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using AudioLib;
+using ComponentsLib;
 using GraphicsLib;
 using SFML.Audio;
 using SFML.Graphics;
@@ -12,50 +13,42 @@ namespace OpenGlTest
     {
         private static RenderWindow window;
         private static Music music;
+        private static WavFile wavFile;
+
+        private static List<Component> components;
 
         static void Main(string[] args)
         {
             window = new RenderWindow(new VideoMode(800, 600), "SFML running in .NET Core");
             window.Closed += (_, __) => window.Close();
-            window.Resized += (_, e) => { window.SetView(new View(new FloatRect(0, 0, e.Width, e.Height))); };
+            window.Resized += (_, e) =>
+            {
+                var scaleX = e.Width / window.GetView().Size.X;
+                var scaleY = e.Height / window.GetView().Size.Y;
+                window.Size = new Vector2u(e.Width, e.Height);
+                window.SetView(new View(new FloatRect(0, 0, e.Width, e.Height)));
+                components.ForEach(c => c.Resize(scaleX, scaleY));
+            };
             window.MouseButtonPressed += Window_MouseButtonPressed;
             window.KeyPressed += Window_KeyPressed;
             window.SetVerticalSyncEnabled(true);
             window.SetActive(false);
 
+            components = new List<Component>();
+
             Font font = new Font("arial.ttf");
             Text text = new Text("", font);
             text.FillColor = Color.White;
 
-            var bytes = FileLoader.LoadAny("file.mp3").Result;
-
-            WavFile wavFile = new WavFile(bytes);
-
-            var waveformTexture = new CpuTexture(800, 600);
-
-            waveformTexture.Clear(0u);
-
-            var waveformParameters = new Dictionary<string, object>();
-
-            waveformParameters["texture"] = waveformTexture;
-            waveformParameters["leftColor"] = 0x7cfc00FFu; //LawnGreen
-            waveformParameters["rightColor"] = 0xff4500FFu; //OrangeRed
-            waveformParameters["leftChannel"] = wavFile.ChannelsSamples[0];
-            waveformParameters["rightChannel"] = wavFile.ChannelsSamples[1];
-            waveformParameters["samplesCount"] = wavFile.samplesCount;
-            waveformParameters["verticalScale"] = 0.9f;
-            waveformParameters["takeRate"] = 3;
-            waveformParameters["iterations"] = 2;
-            waveformParameters["splitWorkFirst"] = true;
-            waveformParameters["portions"] = 10;
-            new TrueWaveformProvider().RecreateAsync(waveformParameters);
-
             RectangleShape rect = new RectangleShape(new Vector2f(1, 600));
             rect.FillColor = Color.White;
 
-            Sprite sprite = new Sprite(waveformTexture.SfmlTexture.Value);
+            WaveformComponent waveformComponent = new WaveformComponent(0, 0, 800, 600);
+            components.Add(waveformComponent);
 
-            music = new Music(bytes);
+            components.ForEach(c => c.Init());
+
+            music = new Music(waveformComponent.WavBytes);
             music.Play();
 
             window.SetActive(true);
@@ -63,9 +56,10 @@ namespace OpenGlTest
             {
                 window.DispatchEvents();
                 window.Clear(Color.Black);
-                waveformTexture.UpdateSfmlTexture();
 
-                rect.Position = new Vector2f(music.PlayingOffset.AsSeconds() / music.Duration.AsSeconds() * 800, 0);
+                components.ForEach(c => c.Update());
+
+                rect.Position = new Vector2f(music.PlayingOffset.AsSeconds() / music.Duration.AsSeconds() * window.Size.X, 0);
 
                 var milliseconds = music.PlayingOffset.AsMilliseconds();
                 var seconds = milliseconds / 1000;
@@ -76,7 +70,7 @@ namespace OpenGlTest
 
                 text.DisplayedString = $"{hours:00}:{minutes:00}:{seconds:00}:{milliseconds:0000}";
 
-                window.Draw(sprite);
+                components.ForEach(c => c.Render(window));
                 window.Draw(text);
                 window.Draw(rect);
                 window.Display();

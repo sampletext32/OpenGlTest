@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\WavVisualize\WavVisualize\WavVisualize.csproj" />
     <ProjectReference Include="..\AudioLib\AudioLib.csproj" />
+    <ProjectReference Include="..\ComponentsLib\ComponentsLib.csproj" />
     <ProjectReference Include="..\GraphicsLib\GraphicsLib.csproj" />
   </ItemGroup>
 
