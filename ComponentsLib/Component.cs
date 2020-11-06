@@ -31,6 +31,10 @@ namespace ComponentsLib
 
         public virtual void Resize(float scaleX, float scaleY)
         {
+            LocationX = (uint)(LocationX * scaleX);
+            LocationY = (uint)(LocationY * scaleY);
+            SizeX = (uint)(SizeX * scaleX);
+            SizeY = (uint)(SizeY * scaleY);
         }
 
         public virtual void UpdateSfmlComponent()

@@ -30,9 +30,12 @@ namespace ComponentsLib
         public override void Resize(float scaleX, float scaleY)
         {
             base.Resize(scaleX, scaleY);
-            Texture = new CpuTexture((uint)(Texture.SizeX * scaleX), (uint)(Texture.SizeY * scaleY));
+            Texture = new CpuTexture(SizeX, SizeY);
+            Texture.Clear(0u);
             SfmlTexture = new Texture(SizeX, SizeY);
-            Sprite.Position = new Vector2f(Sprite.Position.X * scaleX, Sprite.Position.Y * scaleY);
+            Sprite.Texture = SfmlTexture;
+            Sprite.TextureRect = new IntRect(0,0, (int)SfmlTexture.Size.X, (int)SfmlTexture.Size.Y);
+            Sprite.Position = new Vector2f(LocationX, LocationY);
         }
 
         public override void UpdateSfmlComponent()
