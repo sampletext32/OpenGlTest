@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
 using AudioLib;
 using ComponentsLib;
 using GraphicsLib;
@@ -41,7 +44,7 @@ namespace OpenGlTest
 
             TextComponent textComponent = new TextComponent(0, 0, 0, 24);
             components.Add(textComponent);
-            
+
             RectangleShape rect = new RectangleShape(new Vector2f(1, 600));
             rect.FillColor = Color.White;
 
@@ -56,7 +59,8 @@ namespace OpenGlTest
                 window.DispatchEvents();
                 window.Clear(Color.Black);
 
-                rect.Position = new Vector2f(music.PlayingOffset.AsSeconds() / music.Duration.AsSeconds() * window.Size.X, 0);
+                rect.Position =
+                    new Vector2f(music.PlayingOffset.AsSeconds() / music.Duration.AsSeconds() * window.Size.X, 0);
 
                 var milliseconds = music.PlayingOffset.AsMilliseconds();
                 var seconds = milliseconds / 1000;

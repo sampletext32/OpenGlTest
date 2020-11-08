@@ -7,7 +7,7 @@ namespace ComponentsLib
 {
     public class ImageComponent : Component
     {
-        public Texture SfmlTexture { get; set; }
+        protected Texture SfmlTexture { get; set; }
 
         public ImageComponent(uint locX, uint locY, uint sizeX, uint sizeY) : base(locX, locY, sizeX, sizeY)
         {
