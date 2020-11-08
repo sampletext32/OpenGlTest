@@ -5,9 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="NAudio">
-      <HintPath>..\..\WavVisualize\packages\NAudio.1.10.0\lib\net35\NAudio.dll</HintPath>
-    </Reference>
+    <PackageReference Include="NAudio" Version="1.10.0" />
   </ItemGroup>
 
 </Project>
