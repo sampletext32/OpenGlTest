@@ -20,9 +20,9 @@ namespace ComponentsLib
 
         protected bool HardUpdateRequired { get; set; }
 
-        public override void Update()
+        public override void Update(float dt)
         {
-            base.Update();
+            base.Update(dt);
             if (UpdateRequired)
             {
                 if (HardUpdateRequired)

@@ -2,20 +2,11 @@
 {
     public abstract class WaveformComponent : ImageComponent
     {
-        private MusicComponent _musicComponent;
-
         public WaveformComponent(uint locX, uint locY, uint sizeX, uint sizeY) : base(locX, locY, sizeX, sizeY)
         {
         }
 
-        public MusicComponent MusicComponent
-        {
-            get => _musicComponent;
-            set
-            {
-                _musicComponent = value;
-            }
-        }
+        public MusicComponent MusicComponent { get; set; }
 
         public override void Init()
         {

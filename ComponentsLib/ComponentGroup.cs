@@ -15,9 +15,9 @@ namespace ComponentsLib
         public bool UpdateRequired { get; set; }
         public bool IsInited { get; set; }
 
-        public virtual void Update()
+        public virtual void Update(float dt)
         {
-            Components.ForEach(c => c.Update());
+            Components.ForEach(c => c.Update(dt));
         }
 
         public virtual void Init()

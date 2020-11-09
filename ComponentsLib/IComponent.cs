@@ -6,7 +6,7 @@
 
         public bool IsInited { get; set; }
 
-        public void Update();
+        public void Update(float dt);
 
         public void Init();
     }

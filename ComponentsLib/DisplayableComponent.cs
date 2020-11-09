@@ -21,7 +21,7 @@ namespace ComponentsLib
         public virtual bool UpdateRequired { get; set; }
         public bool IsInited { get; set; }
 
-        public virtual void Update()
+        public virtual void Update(float dt)
         {
         }
 

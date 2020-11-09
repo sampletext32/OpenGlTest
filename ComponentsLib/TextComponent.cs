@@ -32,9 +32,9 @@ namespace ComponentsLib
             target.Draw(SfmlText);
         }
 
-        public override void Update()
+        public override void Update(float dt)
         {
-            base.Update();
+            base.Update(dt);
             if (UpdateRequired)
             {
                 SfmlText.CharacterSize = SizeY;

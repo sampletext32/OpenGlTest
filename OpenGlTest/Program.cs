@@ -60,6 +60,9 @@ namespace OpenGlTest
 
             _nonDisplayableComponentGroup.Init();
             _displayableComponentGroup.Init();
+            
+            Clock clock = new Clock();
+
             while (window.IsOpen)
             {
                 window.DispatchEvents();
@@ -77,8 +80,10 @@ namespace OpenGlTest
 
                 textComponent.Text = $"{hours:00}:{minutes:00}:{seconds:00}:{milliseconds:0000}";
 
-                _nonDisplayableComponentGroup.Update();
-                _displayableComponentGroup.Update();
+                float dt = clock.Restart().AsSeconds();
+
+                _nonDisplayableComponentGroup.Update(dt);
+                _displayableComponentGroup.Update(dt);
 
                 _displayableComponentGroup.Render(window);
                 window.Draw(rect);

@@ -41,13 +41,14 @@ namespace ComponentsLib
 
         public bool IsInited { get; set; }
 
-        public void Update()
+        public void Update(float dt)
         {
         }
 
         public void Init()
         {
             SfmlMusic = new Music(WavBytes);
+            SfmlMusic.RelativeToListener = true;
             IsInited = true;
         }
 
