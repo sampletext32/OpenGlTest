@@ -72,7 +72,6 @@ namespace OpenGlTest
                 textComponent.Text = $"{hours:00}:{minutes:00}:{seconds:00}:{milliseconds:0000}";
 
                 components.ForEach(c => c.Update());
-                components.ForEach(c => c.UpdateSfmlComponent());
                 components.ForEach(c => c.Render(window));
                 window.Draw(rect);
                 window.Display();

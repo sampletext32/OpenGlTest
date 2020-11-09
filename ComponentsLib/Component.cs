@@ -1,4 +1,5 @@
-﻿using SFML.Graphics;
+﻿using System.Diagnostics;
+using SFML.Graphics;
 
 namespace ComponentsLib
 {
@@ -12,10 +13,11 @@ namespace ComponentsLib
             SizeY = sizeY;
         }
 
-        protected uint LocationX { get; set; }
-        protected uint LocationY { get; set; }
-        protected uint SizeX { get; set; }
-        protected uint SizeY { get; set; }
+        public uint LocationX { get; protected set; }
+        public uint LocationY { get; protected set; }
+        public uint SizeX { get; protected set; }
+        public uint SizeY { get; protected set; }
+        public bool UpdateRequired { get; protected set; }
 
         public virtual void Render(RenderTarget target)
         {
@@ -35,10 +37,7 @@ namespace ComponentsLib
             LocationY = (uint)(LocationY * scaleY);
             SizeX = (uint)(SizeX * scaleX);
             SizeY = (uint)(SizeY * scaleY);
-        }
-
-        public virtual void UpdateSfmlComponent()
-        {
+            Debug.WriteLine($"{GetType()} Resized to {{{SizeX}, {SizeY}}}");
         }
     }
 }

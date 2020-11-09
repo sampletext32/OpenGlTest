@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using AudioLib;
 using GraphicsLib;
 using SFML.Graphics;
@@ -19,20 +20,7 @@ namespace ComponentsLib
         public byte[] WavBytes { get; private set; }
         public WavFile WavFile { get; private set; }
 
-        public override void Update()
-        {
-            base.Update();
-        }
-
-        public override void UpdateSfmlComponent()
-        {
-            base.UpdateSfmlComponent();
-        }
-
-        public override void Render(RenderTarget target)
-        {
-            base.Render(target);
-        }
+        private Texture _texture;
 
         private void Recreate()
         {
@@ -63,8 +51,8 @@ namespace ComponentsLib
             fragmentShader = fragmentShader.Replace("___1___", WavFile.ChannelsSamples[0].Length.ToString());
             fragmentShader = fragmentShader.Replace("___2___", WavFile.ChannelsSamples[1].Length.ToString());
 
-            Debug.WriteLine($"vertexShader: \n{vertexShader}");
-            Debug.WriteLine($"fragmentShader: \n{fragmentShader}");
+            // Debug.WriteLine($"vertexShader: \n{vertexShader}");
+            // Debug.WriteLine($"fragmentShader: \n{fragmentShader}");
 
             Shader shader = Shader.FromString(vertexShader, null, fragmentShader);
 
@@ -75,7 +63,7 @@ namespace ComponentsLib
             shader.SetUniform("samples", WavFile.ChannelsSamples[0].Length);
             shader.SetUniform("texture", Shader.CurrentTexture);
 
-            var renderStates = new RenderStates()
+            var renderStates = new RenderStates
             {
                 Shader = shader,
                 BlendMode = BlendMode.Alpha
@@ -86,11 +74,13 @@ namespace ComponentsLib
 
             renderTexture.Draw(rect, renderStates);
             renderTexture.Display();
-
-            SfmlTexture.Swap(renderTexture.Texture);
-
-            var image = SfmlTexture.CopyToImage();
+            
+            // copy to local texture
+            using var image = renderTexture.Texture.CopyToImage();
             Array.Copy(image.Pixels, Texture.GetBytes(), image.Pixels.Length);
+            
+            // base component will take care of updated texture
+            UpdateRequired = true;
 
             // throws an error
             //SfmlTexture.Update(texture.Texture, SizeX, SizeY);

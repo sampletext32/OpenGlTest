@@ -11,7 +11,18 @@ namespace ComponentsLib
             SfmlText = new Text(Text, f);
         }
 
-        public string Text { get; set; }
+        private string _text;
+
+        public string Text
+        {
+            get => _text;
+            set
+            {
+                _text = value;
+                UpdateRequired = true;
+            }
+        }
+
         private Text SfmlText { get; }
 
         public override void Render(RenderTarget target)
@@ -20,10 +31,14 @@ namespace ComponentsLib
             target.Draw(SfmlText);
         }
 
-        public override void Resize(float scaleX, float scaleY)
+        public override void Update()
         {
-            base.Resize(scaleX, scaleY);
-            SfmlText.CharacterSize = (uint)(SfmlText.CharacterSize * scaleY);
+            base.Update();
+            if (UpdateRequired)
+            {
+                SfmlText.CharacterSize = SizeY;
+                UpdateRequired = false;
+            }
         }
 
         public override void Init()
@@ -32,12 +47,6 @@ namespace ComponentsLib
             SfmlText.CharacterSize = SizeY;
             SfmlText.Position = new Vector2f(LocationX, LocationY);
             SfmlText.FillColor = Color.White;
-        }
-
-        public override void UpdateSfmlComponent()
-        {
-            base.UpdateSfmlComponent();
-            SfmlText.DisplayedString = Text;
         }
     }
 }
