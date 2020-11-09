@@ -13,10 +13,10 @@ namespace ComponentsLib
             SizeY = sizeY;
         }
 
-        public uint LocationX { get; protected set; }
-        public uint LocationY { get; protected set; }
-        public uint SizeX { get; protected set; }
-        public uint SizeY { get; protected set; }
+        public virtual uint LocationX { get; set; }
+        public virtual uint LocationY { get; protected set; }
+        public virtual uint SizeX { get; protected set; }
+        public virtual uint SizeY { get; protected set; }
 
         public virtual bool UpdateRequired { get; set; }
         public bool IsInited { get; set; }

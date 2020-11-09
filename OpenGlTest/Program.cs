@@ -53,23 +53,20 @@ namespace OpenGlTest
             TextComponent textComponent = new TextComponent(0, 0, 150, 24);
             _displayableComponentGroup.AddComponent(textComponent);
 
-            RectangleShape rect = new RectangleShape(new Vector2f(1, AppHeight));
-            rect.FillColor = Color.White;
-            
+            VerticalLineComponent verticalLineComponent = new VerticalLineComponent(0, 0, AppHeight, Color.Yellow);
+            _displayableComponentGroup.AddComponent(verticalLineComponent);
+
             window.SetActive(true);
 
             _nonDisplayableComponentGroup.Init();
             _displayableComponentGroup.Init();
-            
+
             Clock clock = new Clock();
 
             while (window.IsOpen)
             {
                 window.DispatchEvents();
                 window.Clear(Color.Black);
-
-                rect.Position =
-                    new Vector2f(musicComponent.TimeSeconds / musicComponent.Duration * window.Size.X, 0);
 
                 var milliseconds = (uint)(musicComponent.TimeSeconds * 1000);
                 var seconds = milliseconds / 1000;
@@ -79,6 +76,8 @@ namespace OpenGlTest
                 seconds %= 60;
 
                 textComponent.Text = $"{hours:00}:{minutes:00}:{seconds:00}:{milliseconds:0000}";
+                verticalLineComponent.LocationX =
+                    (uint)(musicComponent.TimeSeconds / musicComponent.Duration * window.Size.X);
 
                 float dt = clock.Restart().AsSeconds();
 

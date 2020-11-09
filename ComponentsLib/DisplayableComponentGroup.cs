@@ -8,7 +8,7 @@ namespace ComponentsLib
         {
         }
 
-        public void Render(RenderTarget target)
+        public virtual void Render(RenderTarget target)
         {
             Components.ForEach(c => c.Render(target));
         }
