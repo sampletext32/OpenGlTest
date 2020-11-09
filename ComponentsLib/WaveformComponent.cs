@@ -60,15 +60,19 @@ namespace ComponentsLib
 
             var vertexShader = File.ReadAllText("vertex_shader.glsl");
             var fragmentShader = File.ReadAllText("fragment_shader.glsl");
+            fragmentShader = fragmentShader.Replace("___1___", WavFile.ChannelsSamples[0].Length.ToString());
+            fragmentShader = fragmentShader.Replace("___2___", WavFile.ChannelsSamples[1].Length.ToString());
+
             Debug.WriteLine($"vertexShader: \n{vertexShader}");
             Debug.WriteLine($"fragmentShader: \n{fragmentShader}");
 
             Shader shader = Shader.FromString(vertexShader, null, fragmentShader);
 
-            // shader.SetUniformArray("leftChannel", WavFile.ChannelsSamples[0]);
-            // shader.SetUniformArray("rightChannel", WavFile.ChannelsSamples[1]);
-            shader.SetUniform("sizeX", (float)SizeX);
+            shader.SetUniformArray("leftChannel", WavFile.ChannelsSamples[0]);
+            shader.SetUniformArray("rightChannel", WavFile.ChannelsSamples[1]);
+            shader.SetUniform("sizeX", SizeX);
             shader.SetUniform("sizeY", SizeY);
+            shader.SetUniform("samples", WavFile.ChannelsSamples[0].Length);
             shader.SetUniform("texture", Shader.CurrentTexture);
 
             var renderStates = new RenderStates()
@@ -86,7 +90,7 @@ namespace ComponentsLib
             SfmlTexture.Swap(renderTexture.Texture);
 
             var image = SfmlTexture.CopyToImage();
-            Array.Copy(image.Pixels, Texture.GetBytes(), image.Pixels.Length); 
+            Array.Copy(image.Pixels, Texture.GetBytes(), image.Pixels.Length);
 
             // throws an error
             //SfmlTexture.Update(texture.Texture, SizeX, SizeY);
