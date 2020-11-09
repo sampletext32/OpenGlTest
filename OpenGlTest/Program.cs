@@ -22,8 +22,33 @@ namespace OpenGlTest
         private const uint AppWidth = 800;
         private const uint AppHeight = 600;
 
+        private static void Test()
+        {
+            RenderWindow window = new RenderWindow(new VideoMode(AppWidth, AppHeight), "SFML running in .NET Core");
+            window.Closed += (_, __) => window.Close();
+            window.SetVerticalSyncEnabled(true);
+            window.SetActive(false);
+            TextInputComponent textInput = new TextInputComponent(0,0, 200, 24);
+
+            Clock clock = new Clock();
+            textInput.Init();
+            while (window.IsOpen)
+            {
+                window.DispatchEvents();
+                window.Clear(Color.Black);
+
+                float dt = clock.Restart().AsSeconds();
+
+                textInput.Update(dt);
+                textInput.Render(window);
+                window.Display();
+            }
+        }
+
         static void Main(string[] args)
         {
+            // Test();
+            // return;
             window = new RenderWindow(new VideoMode(AppWidth, AppHeight), "SFML running in .NET Core");
             window.Closed += (_, __) => window.Close();
             window.Resized += (_, e) =>
@@ -85,7 +110,6 @@ namespace OpenGlTest
                 _displayableComponentGroup.Update(dt);
 
                 _displayableComponentGroup.Render(window);
-                window.Draw(rect);
                 window.Display();
             }
         }

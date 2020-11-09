@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using GraphicsLib;
 using SFML.Graphics;
 using SFML.System;
@@ -19,6 +20,12 @@ namespace ComponentsLib
         public override bool UpdateRequired => HardUpdateRequired || base.UpdateRequired;
 
         protected bool HardUpdateRequired { get; set; }
+
+        public void MutateTexture(Action<ITexture> action)
+        {
+            action.Invoke(Texture);
+            UpdateRequired = true;
+        }
 
         public override void Update(float dt)
         {
