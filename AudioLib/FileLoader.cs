@@ -10,43 +10,43 @@ namespace AudioLib
         public static event Action OnBeginMp3Decompression;
         public static event Action OnBeginWavWriting;
 
-        public static async Task<byte[]> LoadAndDecompressMp3(byte[] fileBytes)
+        public static async Task<Stream> LoadAndDecompressMp3(Stream fileStream)
         {
-            using (MemoryStream mp3MemoryStream = new MemoryStream(fileBytes))
-            {
-                //открываем файл
-                var reader = new Mp3FileReader(mp3MemoryStream);
+            //открываем файл
+            var reader = new Mp3FileReader(fileStream);
 
-                OnBeginMp3Decompression?.Invoke();
+            OnBeginMp3Decompression?.Invoke();
 
-                //создаём PCM поток
-                var waveStream = WaveFormatConversionStream.CreatePcmStream(reader);
+            //создаём PCM поток
+            var waveStream = WaveFormatConversionStream.CreatePcmStream(reader);
 
-                MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new MemoryStream();
 
-                OnBeginWavWriting?.Invoke();
+            OnBeginWavWriting?.Invoke();
 
-                //переписываем MP3 в Wav файл в потоке
-                await Task.Run(() => WaveFileWriter.WriteWavFileToStream(ms, waveStream));
+            //переписываем MP3 в Wav файл в потоке
+            await Task.Run(() => WaveFileWriter.WriteWavFileToStream(ms, waveStream));
 
-                return ms.ToArray();
-            }
+            ms.Seek(0, SeekOrigin.Begin);
+            return ms;
         }
 
-        public static async Task<byte[]> LoadAny(string filepath)
+        public static async Task<Stream> LoadAny(string filepath)
         {
-            byte[] fileBytes = File.ReadAllBytes(filepath);
-            if (filepath.EndsWith(".mp3"))
+            using (var fileStream = File.OpenRead(filepath))
             {
-                return await LoadAndDecompressMp3(fileBytes);
-            }
-            else if (filepath.EndsWith(".wav"))
-            {
-                return fileBytes;
-            }
-            else
-            {
-                throw new NotSupportedException("FileFormat Unknown");
+                if (filepath.EndsWith(".mp3"))
+                {
+                    return await LoadAndDecompressMp3(fileStream);
+                }
+                else if (filepath.EndsWith(".wav"))
+                {
+                    return fileStream;
+                }
+                else
+                {
+                    throw new NotSupportedException("FileFormat Unknown");
+                }
             }
         }
     }

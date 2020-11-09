@@ -66,7 +66,7 @@ namespace AudioLib
         public float[][] ChannelsSamples;
 
         #endregion
-        
+
         private static float[] ExtractSamples(byte[] data, int bitsPerSample)
         {
             int length = data.Length;
@@ -86,9 +86,9 @@ namespace AudioLib
                     for (int i = 0; i < samples.Length; i++)
                     {
                         //Invert First Bit For Bitcast Types (slightly faster than subtracting)
-                        int sample = (sbyte) (data[i * 1 + 0] ^ 0x80);
+                        int sample = (sbyte)(data[i * 1 + 0] ^ 0x80);
 
-                        samples[i] = (float) (sample / pow2_7);
+                        samples[i] = (float)(sample / pow2_7);
                     }
 
                     break;
@@ -96,9 +96,9 @@ namespace AudioLib
                     samples = new float[length / 2];
                     for (int i = 0; i < samples.Length; i++)
                     {
-                        short sample = (short) (
+                        short sample = (short)(
                             ((data[i * 2 + 0] & 0xff) << 0) | ((data[i * 2 + 1] & 0xff) << 8));
-                        samples[i] = (float) (sample / pow2_15);
+                        samples[i] = (float)(sample / pow2_15);
                     }
 
                     break;
@@ -112,7 +112,7 @@ namespace AudioLib
                                ((data[i * 3 + 2] & 0xff) << 16)) << 8;
                         //Делим на 2^32 - максимальное число в 32 битном числе, а не 24.
                         samples[i] =
-                            (float) (sample / pow2_31);
+                            (float)(sample / pow2_31);
                     }
 
                     break;
@@ -123,7 +123,7 @@ namespace AudioLib
                         int sample
                             = ((data[i * 4 + 0] & 0xff) << 0) | ((data[i * 4 + 1] & 0xff) << 8) |
                               ((data[i * 4 + 2] & 0xff) << 16) | ((data[i * 4 + 3] & 0xff) << 24);
-                        samples[i] = (float) (sample / pow2_31);
+                        samples[i] = (float)(sample / pow2_31);
                     }
 
                     break;
@@ -132,11 +132,11 @@ namespace AudioLib
                     for (int i = 0; i < samples.Length; i++)
                     {
                         long sample =
-                            ((long) (data[i * 8 + 0] & 0xff) << 0) | ((long) (data[i * 8 + 1] & 0xff) << 8) |
-                            ((long) (data[i * 8 + 2] & 0xff) << 16) | ((long) (data[i * 8 + 3] & 0xff) << 24) |
-                            ((long) (data[i * 8 + 4] & 0xff) << 32) | ((long) (data[i * 8 + 5] & 0xff) << 40) |
-                            ((long) (data[i * 8 + 6] & 0xff) << 48) | ((long) (data[i * 8 + 7] & 0xff) << 56);
-                        samples[i] = (float) (sample / pow2_63);
+                            ((long)(data[i * 8 + 0] & 0xff) << 0) | ((long)(data[i * 8 + 1] & 0xff) << 8) |
+                            ((long)(data[i * 8 + 2] & 0xff) << 16) | ((long)(data[i * 8 + 3] & 0xff) << 24) |
+                            ((long)(data[i * 8 + 4] & 0xff) << 32) | ((long)(data[i * 8 + 5] & 0xff) << 40) |
+                            ((long)(data[i * 8 + 6] & 0xff) << 48) | ((long)(data[i * 8 + 7] & 0xff) << 56);
+                        samples[i] = (float)(sample / pow2_63);
                     }
 
                     break;
@@ -152,45 +152,55 @@ namespace AudioLib
             return await Task<WavFile>.Factory.StartNew(() => new WavFile(fileData));
         }
 
-        public WavFile(byte[] fileData)
+        private void LoadFromStream(Stream stream)
+        {
+            BinaryReader reader = new BinaryReader(stream);
+
+            chunkId = "" + (char)reader.ReadByte() + (char)reader.ReadByte() + (char)reader.ReadByte() +
+                      (char)reader.ReadByte(); // 0x52494646
+            chunkSize = reader.ReadInt32();
+            format = "" + (char)reader.ReadByte() + (char)reader.ReadByte() + (char)reader.ReadByte() +
+                     (char)reader.ReadByte(); // 0x57415645
+            subchunk1Id = "" + (char)reader.ReadByte() + (char)reader.ReadByte() + (char)reader.ReadByte() +
+                          (char)reader.ReadByte(); // 0x666d7420
+            subchunk1Size = reader.ReadInt32();
+            if (subchunk1Id == "JUNK")
+            {
+                reader.BaseStream.Seek(subchunk1Size, SeekOrigin.Current);
+                subchunk1Id = "" + (char)reader.ReadByte() + (char)reader.ReadByte() + (char)reader.ReadByte() +
+                              (char)reader.ReadByte(); // 0x666d7420
+                subchunk1Size = reader.ReadInt32();
+            }
+
+            audioFormat = reader.ReadInt16();
+            numChannels = reader.ReadInt16();
+            sampleRate = reader.ReadInt32();
+            byteRate = reader.ReadInt32();
+            blockAlign = reader.ReadInt16();
+            bitsPerSample = reader.ReadInt16();
+            subchunk2Id = "" + (char)reader.ReadByte() + (char)reader.ReadByte() + (char)reader.ReadByte() +
+                          (char)reader.ReadByte(); // 0x64617461
+            subchunk2Size = reader.ReadInt32();
+
+            WavData = reader.ReadBytes((int)(stream.Length - stream.Position));
+
+            RawSamples = ExtractSamples(WavData, bitsPerSample);
+
+            samplesCount = RawSamples.Length / numChannels;
+
+            ChannelsSamples = ExtractChannels(RawSamples, numChannels);
+        }
+
+        public WavFile(Stream stream)
+        {
+            LoadFromStream(stream);
+        }
+
+        public WavFile(byte[] fileData) : this(new MemoryStream(fileData))
         {
             using (var ms = new MemoryStream(fileData))
             {
-                BinaryReader reader = new BinaryReader(ms);
-
-                chunkId = "" + (char) reader.ReadByte() + (char) reader.ReadByte() + (char) reader.ReadByte() +
-                          (char) reader.ReadByte(); // 0x52494646
-                chunkSize = reader.ReadInt32();
-                format = "" + (char) reader.ReadByte() + (char) reader.ReadByte() + (char) reader.ReadByte() +
-                         (char) reader.ReadByte(); // 0x57415645
-                subchunk1Id = "" + (char) reader.ReadByte() + (char) reader.ReadByte() + (char) reader.ReadByte() +
-                              (char) reader.ReadByte(); // 0x666d7420
-                subchunk1Size = reader.ReadInt32();
-                if (subchunk1Id == "JUNK")
-                {
-                    reader.BaseStream.Seek(subchunk1Size, SeekOrigin.Current);
-                    subchunk1Id = "" + (char) reader.ReadByte() + (char) reader.ReadByte() + (char) reader.ReadByte() +
-                                  (char) reader.ReadByte(); // 0x666d7420
-                    subchunk1Size = reader.ReadInt32();
-                }
-
-                audioFormat = reader.ReadInt16();
-                numChannels = reader.ReadInt16();
-                sampleRate = reader.ReadInt32();
-                byteRate = reader.ReadInt32();
-                blockAlign = reader.ReadInt16();
-                bitsPerSample = reader.ReadInt16();
-                subchunk2Id = "" + (char) reader.ReadByte() + (char) reader.ReadByte() + (char) reader.ReadByte() +
-                              (char) reader.ReadByte(); // 0x64617461
-                subchunk2Size = reader.ReadInt32();
-
-                WavData = reader.ReadBytes((int) (ms.Length - ms.Position));
-
-                RawSamples = ExtractSamples(WavData, bitsPerSample);
-
-                samplesCount = RawSamples.Length / numChannels;
-
-                ChannelsSamples = ExtractChannels(RawSamples, numChannels);
+                LoadFromStream(ms);
             }
         }
 

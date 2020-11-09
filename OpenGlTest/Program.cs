@@ -15,9 +15,9 @@ namespace OpenGlTest
     class Program
     {
         private static RenderWindow window;
-        private static Music music;
 
-        private static ComponentGroup _componentGroup;
+        private static DisplayableComponentGroup _displayableComponentGroup;
+        private static ComponentGroup<IComponent> _nonDisplayableComponentGroup;
 
         private const uint AppWidth = 800;
         private const uint AppHeight = 600;
@@ -32,39 +32,43 @@ namespace OpenGlTest
                 var scaleY = e.Height / window.GetView().Size.Y;
                 window.Size = new Vector2u(e.Width, e.Height);
                 window.SetView(new View(new FloatRect(0, 0, e.Width, e.Height)));
-                _componentGroup.Resize(scaleX, scaleY);
+                _displayableComponentGroup.Resize(scaleX, scaleY);
             };
             window.MouseButtonPressed += Window_MouseButtonPressed;
             window.KeyPressed += Window_KeyPressed;
             window.SetVerticalSyncEnabled(true);
             window.SetActive(false);
 
-            _componentGroup = new ComponentGroup(0, 0, AppWidth, AppHeight);
+            _displayableComponentGroup = new DisplayableComponentGroup(0, 0, AppWidth, AppHeight);
+            _nonDisplayableComponentGroup = new ComponentGroup<IComponent>();
 
             WaveformComponent waveformComponent = new CpuWaveformComponent(0, 0, AppWidth, AppHeight);
-            _componentGroup.AddComponent(waveformComponent);
+            _displayableComponentGroup.AddComponent(waveformComponent);
+
+            var musicComponent = new MusicComponent("file.mp3");
+            _nonDisplayableComponentGroup.AddComponent(musicComponent);
+
+            waveformComponent.MusicComponent = musicComponent;
 
             TextComponent textComponent = new TextComponent(0, 0, 150, 24);
-            _componentGroup.AddComponent(textComponent);
+            _displayableComponentGroup.AddComponent(textComponent);
 
             RectangleShape rect = new RectangleShape(new Vector2f(1, AppHeight));
             rect.FillColor = Color.White;
-
-            _componentGroup.Init();
-
-            music = new Music(waveformComponent.WavBytes);
-            music.Play();
-
+            
             window.SetActive(true);
+
+            _nonDisplayableComponentGroup.Init();
+            _displayableComponentGroup.Init();
             while (window.IsOpen)
             {
                 window.DispatchEvents();
                 window.Clear(Color.Black);
 
                 rect.Position =
-                    new Vector2f(music.PlayingOffset.AsSeconds() / music.Duration.AsSeconds() * window.Size.X, 0);
+                    new Vector2f(musicComponent.TimeSeconds / musicComponent.Duration * window.Size.X, 0);
 
-                var milliseconds = music.PlayingOffset.AsMilliseconds();
+                var milliseconds = (uint)(musicComponent.TimeSeconds * 1000);
                 var seconds = milliseconds / 1000;
                 var minutes = seconds / 60 % 60;
                 var hours = seconds / 3600;
@@ -73,8 +77,10 @@ namespace OpenGlTest
 
                 textComponent.Text = $"{hours:00}:{minutes:00}:{seconds:00}:{milliseconds:0000}";
 
-                _componentGroup.Update();
-                _componentGroup.Render(window);
+                _nonDisplayableComponentGroup.Update();
+                _displayableComponentGroup.Update();
+
+                _displayableComponentGroup.Render(window);
                 window.Draw(rect);
                 window.Display();
             }
@@ -84,7 +90,8 @@ namespace OpenGlTest
         {
             if (e.Button == Mouse.Button.Left)
             {
-                music.PlayingOffset = Time.FromSeconds((float)e.X / window.Size.X * music.Duration.AsSeconds());
+                var musicComponent = _nonDisplayableComponentGroup.FirstOfType<MusicComponent>();
+                musicComponent.TimeSeconds = (float)e.X / window.Size.X * musicComponent.Duration;
             }
         }
 
@@ -110,14 +117,8 @@ namespace OpenGlTest
             }
             else if (e.Code == Keyboard.Key.Space)
             {
-                if (music.Status != SoundStatus.Playing)
-                {
-                    music.Play();
-                }
-                else
-                {
-                    music.Pause();
-                }
+                var musicComponent = _nonDisplayableComponentGroup.FirstOfType<MusicComponent>();
+                musicComponent.PlayPause();
             }
         }
     }

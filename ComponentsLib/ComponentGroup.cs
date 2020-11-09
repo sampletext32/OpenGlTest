@@ -1,57 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using SFML.Graphics;
 
 namespace ComponentsLib
 {
-    public class ComponentGroup : Component
+    public class ComponentGroup<T> : IComponent where T : IComponent
     {
-        private List<Component> _components;
-
-        public ComponentGroup(uint locX, uint locY, uint sizeX, uint sizeY) : base(locX, locY, sizeX, sizeY)
+        public ComponentGroup()
         {
-            _components = new List<Component>();
+            Components = new List<T>();
         }
 
-        public void AddComponent(Component component)
+        protected List<T> Components { get; set; }
+
+        public bool UpdateRequired { get; set; }
+        public bool IsInited { get; set; }
+
+        public virtual void Update()
         {
-            _components.Add(component);
+            Components.ForEach(c => c.Update());
         }
 
-        public List<T> OfType<T>() where T : Component
+        public virtual void Init()
         {
-            return _components.Where(t => t.GetType() == typeof(T)).Cast<T>().ToList();
+            Components.ForEach(c => c.Init());
+            IsInited = true;
         }
 
-        public T FirstOfType<T>() where T : Component
+        public void AddComponent(T component)
         {
-            return (T)_components.FirstOrDefault(t => t.GetType() == typeof(T));
+            Components.Add(component);
         }
 
-        public override void Update()
+        public virtual List<TK> OfType<TK>() where TK : T
         {
-            base.Update();
-            _components.ForEach(c => c.Update());
+            return Components.Where(t => t.GetType() == typeof(TK)).Cast<TK>().ToList();
         }
 
-        public override void Init()
+        public virtual TK FirstOfType<TK>() where TK : T
         {
-            base.Init();
-            _components.ForEach(c => c.Init());
-        }
-
-        public override void Render(RenderTarget target)
-        {
-            base.Init();
-            _components.ForEach(c => c.Render(target));
-        }
-
-        public override void Resize(float scaleX, float scaleY)
-        {
-            base.Resize(scaleX, scaleY);
-            _components.ForEach(c => c.Resize(scaleX, scaleY));
+            return (TK)Components.FirstOrDefault(t => t.GetType() == typeof(TK));
         }
     }
 }

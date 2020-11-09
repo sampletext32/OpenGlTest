@@ -1,31 +1,29 @@
-﻿using AudioLib;
-using SFML.Graphics;
-
-namespace ComponentsLib
+﻿namespace ComponentsLib
 {
-    public class WaveformComponent : ImageComponent
+    public abstract class WaveformComponent : ImageComponent
     {
+        private MusicComponent _musicComponent;
+
         public WaveformComponent(uint locX, uint locY, uint sizeX, uint sizeY) : base(locX, locY, sizeX, sizeY)
         {
         }
 
-        public byte[] WavBytes { get; private set; }
-        public WavFile WavFile { get; private set; }
-
-        protected virtual void Recreate()
+        public MusicComponent MusicComponent
         {
+            get => _musicComponent;
+            set
+            {
+                _musicComponent = value;
+            }
         }
 
         public override void Init()
         {
             base.Init();
-
-            WavBytes = FileLoader.LoadAny("file.mp3").Result;
-
-            WavFile = new WavFile(WavBytes);
-
             Recreate();
         }
+
+        protected abstract void Recreate();
 
         public override void Resize(float scaleX, float scaleY)
         {

@@ -1,23 +1,17 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using GraphicsLib;
 using SFML.Graphics;
 using SFML.System;
 
 namespace ComponentsLib
 {
-    public class ImageComponent : Component
+    public class ImageComponent : DisplayableComponent
     {
-        protected Texture SfmlTexture { get; set; }
-
         public ImageComponent(uint locX, uint locY, uint sizeX, uint sizeY) : base(locX, locY, sizeX, sizeY)
         {
-            Texture = new CpuTexture(SizeX, SizeY);
-            Texture.Clear(0u);
-            SfmlTexture = new Texture(SizeX, SizeY);
-            Sprite = new Sprite(SfmlTexture);
-            Sprite.Position = new Vector2f(LocationX, LocationY);
         }
+
+        protected Texture SfmlTexture { get; set; }
 
         protected ITexture Texture { get; set; }
         protected Sprite Sprite { get; set; }
@@ -44,6 +38,16 @@ namespace ComponentsLib
                 UpdateRequired = false;
                 // Debug.WriteLine($"{GetType()} Updated");
             }
+        }
+
+        public override void Init()
+        {
+            base.Init();
+            Texture = new CpuTexture(SizeX, SizeY);
+            Texture.Clear(0u);
+            SfmlTexture = new Texture(SizeX, SizeY);
+            Sprite = new Sprite(SfmlTexture);
+            Sprite.Position = new Vector2f(LocationX, LocationY);
         }
 
         public override void Render(RenderTarget target)

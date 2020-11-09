@@ -13,16 +13,14 @@ namespace ComponentsLib
 
         protected override void Recreate()
         {
-            base.Recreate();
-
             var waveformParameters = new Dictionary<string, object>();
 
             waveformParameters["texture"] = Texture;
             waveformParameters["leftColor"] = 0x7cfc00FFu; //LawnGreen
             waveformParameters["rightColor"] = 0xff4500FFu; //OrangeRed
-            waveformParameters["leftChannel"] = WavFile.ChannelsSamples[0];
-            waveformParameters["rightChannel"] = WavFile.ChannelsSamples[1];
-            waveformParameters["samplesCount"] = WavFile.samplesCount;
+            waveformParameters["leftChannel"] = MusicComponent.WavFile.ChannelsSamples[0];
+            waveformParameters["rightChannel"] = MusicComponent.WavFile.ChannelsSamples[1];
+            waveformParameters["samplesCount"] = MusicComponent.WavFile.samplesCount;
             waveformParameters["verticalScale"] = 0.9f;
             waveformParameters["takeRate"] = 3;
             waveformParameters["iterations"] = 2;

@@ -3,9 +3,9 @@ using SFML.Graphics;
 
 namespace ComponentsLib
 {
-    public class Component
+    public class DisplayableComponent : IComponent
     {
-        public Component(uint locX, uint locY, uint sizeX, uint sizeY)
+        public DisplayableComponent(uint locX, uint locY, uint sizeX, uint sizeY)
         {
             LocationX = locX;
             LocationY = locY;
@@ -17,11 +17,9 @@ namespace ComponentsLib
         public uint LocationY { get; protected set; }
         public uint SizeX { get; protected set; }
         public uint SizeY { get; protected set; }
-        public virtual bool UpdateRequired { get; protected set; }
 
-        public virtual void Render(RenderTarget target)
-        {
-        }
+        public virtual bool UpdateRequired { get; set; }
+        public bool IsInited { get; set; }
 
         public virtual void Update()
         {
@@ -29,6 +27,7 @@ namespace ComponentsLib
 
         public virtual void Init()
         {
+            IsInited = true;
         }
 
         public virtual void Resize(float scaleX, float scaleY)
@@ -38,6 +37,10 @@ namespace ComponentsLib
             SizeX = (uint)(SizeX * scaleX);
             SizeY = (uint)(SizeY * scaleY);
             Debug.WriteLine($"{GetType()} Resized to {{{SizeX}, {SizeY}}}");
+        }
+
+        public virtual void Render(RenderTarget target)
+        {
         }
     }
 }
