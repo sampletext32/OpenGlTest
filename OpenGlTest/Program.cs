@@ -18,7 +18,7 @@ namespace OpenGlTest
         private static Music music;
         private static WavFile wavFile;
 
-        private static List<Component> components;
+        private static ComponentGroup _componentGroup;
 
         static void Main(string[] args)
         {
@@ -30,25 +30,25 @@ namespace OpenGlTest
                 var scaleY = e.Height / window.GetView().Size.Y;
                 window.Size = new Vector2u(e.Width, e.Height);
                 window.SetView(new View(new FloatRect(0, 0, e.Width, e.Height)));
-                components.ForEach(c => c.Resize(scaleX, scaleY));
+                _componentGroup.Resize(scaleX, scaleY);
             };
             window.MouseButtonPressed += Window_MouseButtonPressed;
             window.KeyPressed += Window_KeyPressed;
             window.SetVerticalSyncEnabled(true);
             window.SetActive(false);
 
-            components = new List<Component>();
-
+            _componentGroup = new ComponentGroup(0, 0, 800, 600);
+            
             WaveformComponent waveformComponent = new CpuWaveformComponent(0, 0, 800, 600);
-            components.Add(waveformComponent);
+            _componentGroup.AddComponent(waveformComponent);
 
             TextComponent textComponent = new TextComponent(0, 0, 150, 24);
-            components.Add(textComponent);
+            _componentGroup.AddComponent(textComponent);
 
             RectangleShape rect = new RectangleShape(new Vector2f(1, 600));
             rect.FillColor = Color.White;
 
-            components.ForEach(c => c.Init());
+            _componentGroup.Init();
 
             music = new Music(waveformComponent.WavBytes);
             music.Play();
@@ -71,8 +71,8 @@ namespace OpenGlTest
 
                 textComponent.Text = $"{hours:00}:{minutes:00}:{seconds:00}:{milliseconds:0000}";
 
-                components.ForEach(c => c.Update());
-                components.ForEach(c => c.Render(window));
+                _componentGroup.Update();
+                _componentGroup.Render(window);
                 window.Draw(rect);
                 window.Display();
             }
