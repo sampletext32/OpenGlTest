@@ -20,6 +20,11 @@ namespace ComponentsLib
             get => _text;
             set
             {
+                if (_text == value)
+                {
+                    // if we accidentally set the same text as displayed, don't update anything
+                    return;
+                }
                 _text = value;
                 UpdateRequired = true;
             }
