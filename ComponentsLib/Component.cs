@@ -17,7 +17,7 @@ namespace ComponentsLib
         public uint LocationY { get; protected set; }
         public uint SizeX { get; protected set; }
         public uint SizeY { get; protected set; }
-        public bool UpdateRequired { get; protected set; }
+        public virtual bool UpdateRequired { get; protected set; }
 
         public virtual void Render(RenderTarget target)
         {

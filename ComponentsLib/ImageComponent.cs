@@ -22,15 +22,25 @@ namespace ComponentsLib
         protected ITexture Texture { get; set; }
         protected Sprite Sprite { get; set; }
 
+        public override bool UpdateRequired => HardUpdateRequired || base.UpdateRequired;
+
+        protected bool HardUpdateRequired { get; set; }
+
         public override void Update()
         {
             base.Update();
             if (UpdateRequired)
             {
-                SfmlTexture.Swap(new Texture(SizeX, SizeY));
+                if (HardUpdateRequired)
+                {
+                    SfmlTexture.Swap(new Texture(SizeX, SizeY));
+                    Sprite.TextureRect = new IntRect(0, 0, (int)SfmlTexture.Size.X, (int)SfmlTexture.Size.Y);
+                    Sprite.Position = new Vector2f(LocationX, LocationY);
+                    HardUpdateRequired = false;
+                    Debug.WriteLine($"{GetType()} Hard Updated");
+                }
+
                 SfmlTexture.Update(Texture.GetBytes());
-                Sprite.TextureRect = new IntRect(0, 0, (int)SfmlTexture.Size.X, (int)SfmlTexture.Size.Y);
-                Sprite.Position = new Vector2f(LocationX, LocationY);
                 UpdateRequired = false;
                 Debug.WriteLine($"{GetType()} Updated");
             }
@@ -47,7 +57,7 @@ namespace ComponentsLib
             base.Resize(scaleX, scaleY);
             Texture = new CpuTexture(SizeX, SizeY);
             Texture.Clear(0u);
-            UpdateRequired = true;
+            HardUpdateRequired = true;
         }
     }
 }
