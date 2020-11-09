@@ -12,8 +12,6 @@ namespace ComponentsLib
         public byte[] WavBytes { get; private set; }
         public WavFile WavFile { get; private set; }
 
-        private Texture _texture;
-
         protected virtual void Recreate()
         {
         }

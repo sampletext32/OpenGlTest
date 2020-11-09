@@ -16,7 +16,6 @@ namespace OpenGlTest
     {
         private static RenderWindow window;
         private static Music music;
-        private static WavFile wavFile;
 
         private static ComponentGroup _componentGroup;
 
@@ -41,7 +40,7 @@ namespace OpenGlTest
             window.SetActive(false);
 
             _componentGroup = new ComponentGroup(0, 0, AppWidth, AppHeight);
-            
+
             WaveformComponent waveformComponent = new CpuWaveformComponent(0, 0, AppWidth, AppHeight);
             _componentGroup.AddComponent(waveformComponent);
 
@@ -108,6 +107,17 @@ namespace OpenGlTest
             if (e.Code == Keyboard.Key.Escape)
             {
                 window.Close();
+            }
+            else if (e.Code == Keyboard.Key.Space)
+            {
+                if (music.Status != SoundStatus.Playing)
+                {
+                    music.Play();
+                }
+                else
+                {
+                    music.Pause();
+                }
             }
         }
     }
