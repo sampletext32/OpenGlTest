@@ -75,7 +75,8 @@ namespace OpenGlTest
 
             waveformComponent.MusicComponent = musicComponent;
 
-            TextComponent textComponent = new TextComponent(0, 0, 150, 24);
+            PlaybackTimeTextComponent textComponent = new PlaybackTimeTextComponent(0, 0, 150, 24);
+            textComponent.MusicComponent = musicComponent;
             _displayableComponentGroup.AddComponent(textComponent);
 
             VerticalLineComponent verticalLineComponent = new VerticalLineComponent(0, 0, AppHeight, Color.Yellow);
@@ -93,14 +94,6 @@ namespace OpenGlTest
                 window.DispatchEvents();
                 window.Clear(Color.Black);
 
-                var milliseconds = (uint)(musicComponent.TimeSeconds * 1000);
-                var seconds = milliseconds / 1000;
-                var minutes = seconds / 60 % 60;
-                var hours = seconds / 3600;
-                milliseconds %= 1000;
-                seconds %= 60;
-
-                textComponent.Text = $"{hours:00}:{minutes:00}:{seconds:00}:{milliseconds:0000}";
                 verticalLineComponent.LocationX =
                     (uint)(musicComponent.TimeSeconds / musicComponent.Duration * window.Size.X);
 
