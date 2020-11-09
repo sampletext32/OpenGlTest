@@ -1,4 +1,6 @@
-﻿using SFML.Graphics;
+﻿using System.Diagnostics;
+using System.Linq;
+using SFML.Graphics;
 using SFML.System;
 
 namespace ComponentsLib
@@ -37,7 +39,19 @@ namespace ComponentsLib
             if (UpdateRequired)
             {
                 SfmlText.CharacterSize = SizeY;
+                SfmlText.DisplayedString = Text;
+                float offset = 0f;
+                for (int i = 0; i < Text.Length; i++)
+                {
+                    offset += SfmlText.Font.GetGlyph(Text[i], SfmlText.CharacterSize, false, 0f).Advance;
+                    if (offset > SizeX)
+                    {
+                        SfmlText.DisplayedString = Text.Substring(0, i);
+                        break;
+                    }
+                }
                 UpdateRequired = false;
+                Debug.WriteLine($"{GetType()} Updated");
             }
         }
 
