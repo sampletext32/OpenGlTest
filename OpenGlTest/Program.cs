@@ -20,9 +20,12 @@ namespace OpenGlTest
 
         private static ComponentGroup _componentGroup;
 
+        private const uint AppWidth = 800;
+        private const uint AppHeight = 600;
+
         static void Main(string[] args)
         {
-            window = new RenderWindow(new VideoMode(800, 600), "SFML running in .NET Core");
+            window = new RenderWindow(new VideoMode(AppWidth, AppHeight), "SFML running in .NET Core");
             window.Closed += (_, __) => window.Close();
             window.Resized += (_, e) =>
             {
@@ -37,15 +40,15 @@ namespace OpenGlTest
             window.SetVerticalSyncEnabled(true);
             window.SetActive(false);
 
-            _componentGroup = new ComponentGroup(0, 0, 800, 600);
+            _componentGroup = new ComponentGroup(0, 0, AppWidth, AppHeight);
             
-            WaveformComponent waveformComponent = new CpuWaveformComponent(0, 0, 800, 600);
+            WaveformComponent waveformComponent = new CpuWaveformComponent(0, 0, AppWidth, AppHeight);
             _componentGroup.AddComponent(waveformComponent);
 
             TextComponent textComponent = new TextComponent(0, 0, 150, 24);
             _componentGroup.AddComponent(textComponent);
 
-            RectangleShape rect = new RectangleShape(new Vector2f(1, 600));
+            RectangleShape rect = new RectangleShape(new Vector2f(1, AppHeight));
             rect.FillColor = Color.White;
 
             _componentGroup.Init();
