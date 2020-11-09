@@ -14,32 +14,18 @@ namespace GraphicsLib
             _isStopped = true;
         }
 
-        private void WriteSample(ITexture texture, uint leftColor, uint rightColor, int leftSample,
-            int rightSample,
+        private void WriteSample(ITexture texture, uint leftColor, uint rightColor, uint leftSample,
+            uint rightSample,
             uint x, uint baseLineLeft, uint baseLineRight)
         {
-            if (leftSample < 0)
-            {
-                texture.WriteVertical(x, baseLineLeft, (uint)(baseLineLeft - leftSample), leftColor);
-            }
-            else
-            {
-                texture.WriteVertical(x, (uint)(baseLineLeft - leftSample), baseLineLeft, leftColor);
-            }
+            texture.WriteVertical(x, baseLineLeft - leftSample / 2, baseLineLeft + leftSample / 2, leftColor);
 
-            if (rightSample < 0)
-            {
-                texture.WriteVertical(x, baseLineRight, (uint)(baseLineRight - rightSample), leftColor);
-            }
-            else
-            {
-                texture.WriteVertical(x, (uint)(baseLineRight - rightSample), baseLineRight, leftColor);
-            }
+            texture.WriteVertical(x, baseLineRight - rightSample / 2, baseLineRight + rightSample / 2, rightColor);
         }
 
-        private void MapWaveform(uint leftColor, uint rightColor,
-            float[] leftChannel, float[] rightChannel, int samplesCount,
-            int startSample, int endSample, float verticalScale, int takeRate,
+        private void MapPortion(uint leftColor, uint rightColor,
+            float[] leftChannel, float[] rightChannel, uint samplesCount,
+            uint startSample, uint endSample, float verticalScale, uint takeRate,
             ITexture texture)
         {
             //TODO: Exclude directBitmap.Height, include height property
@@ -48,30 +34,45 @@ namespace GraphicsLib
             var verticalThreeQuarters = verticalHalf * 3 / 2;
 
             var maxVerticalSize = verticalQuarter * verticalScale;
+            
+            uint samplesPerColumn = samplesCount / texture.SizeX;
 
-            for (var currentSample = startSample; currentSample < endSample; currentSample += takeRate)
+            for (; startSample < endSample; startSample += samplesPerColumn)
             {
-                if (_isStopped) break;
-
+                float lowestL = 0f;
+                float lowestR = 0f;
+                float highestL = 0f;
+                float highestR = 0f;
+                
                 var xPosition =
-                    (uint)(currentSample / (float)samplesCount * texture.SizeX);
+                    (uint)(startSample / (float)samplesCount * texture.SizeX);
+
+                for (uint currentSample = startSample, end = Math.Min(endSample ,startSample + samplesPerColumn);
+                    currentSample < end;
+                    currentSample++)
+                {
+                    lowestL = MathF.Min(lowestL, leftChannel[currentSample]);
+                    lowestR = MathF.Min(lowestR, rightChannel[currentSample]);
+                    highestL = MathF.Max(highestL, leftChannel[currentSample]);
+                    highestR = MathF.Max(highestR, rightChannel[currentSample]);
+                }
 
                 var valueL =
-                    (int)(leftChannel[currentSample] * maxVerticalSize);
+                    (uint)((highestL - lowestL) * maxVerticalSize);
                 var valueR =
-                    (int)(rightChannel[currentSample] * maxVerticalSize);
+                    (uint)((highestR - lowestR) * maxVerticalSize);
 
                 WriteSample(texture, leftColor, rightColor, valueL, valueR, xPosition, verticalQuarter,
                     verticalThreeQuarters);
-
-                Notify?.Invoke();
             }
+
+            Notify?.Invoke();
         }
 
         private void MasterWaveformMapping(uint leftColor, uint rightColor,
-            float[] leftChannel, float[] rightChannel, int inputSamplesCount, int startSample, int endSample,
+            float[] leftChannel, float[] rightChannel, uint inputSamplesCount, uint startSample, uint endSample,
             float verticalScale,
-            int portions, int iterations,
+            uint portions, uint iterations,
             bool splitWorkFirst,
             ITexture texture)
         {
@@ -80,44 +81,44 @@ namespace GraphicsLib
             var samplesPerPortion = sampleToMapCount / portions;
 
             if (splitWorkFirst)
-                for (var portion = 0; portion < portions; portion++)
+                for (uint portion = 0; portion < portions; portion++)
                 {
                     if (_isStopped) break;
                     var portionStartSample = portion * samplesPerPortion;
                     var portionEndSample = (portion + 1) * samplesPerPortion - 1;
 
-                    Debug.WriteLine("Portion {0}: {1} - {2}", portion, portionStartSample, portionEndSample);
+                    // Debug.WriteLine("Portion {0}: {1} - {2}", portion, portionStartSample, portionEndSample);
 
-                    for (var i = 0; i < iterations; i++)
+                    for (uint i = 0; i < iterations; i++)
                     {
                         if (_isStopped) break;
                         var iterationOffset = i;
                         var takeRate = iterations;
 
-                        Debug.WriteLine("Iteration {0}", i);
+                        // Debug.WriteLine("Iteration {0}", i);
 
-                        MapWaveform(leftColor, rightColor, leftChannel, rightChannel, inputSamplesCount,
-                            portionStartSample + iterationOffset,
-                            portionEndSample, verticalScale, takeRate, texture);
+                        MapPortion(leftColor, rightColor, leftChannel, rightChannel, inputSamplesCount,
+                            (uint)(portionStartSample + iterationOffset),
+                            (uint)portionEndSample, verticalScale, takeRate, texture);
                     }
                 }
             else
-                for (var i = 0; i < iterations; i++)
+                for (uint i = 0; i < iterations; i++)
                 {
                     if(_isStopped) break;
                     var iterationOffset = i;
                     var takeRate = iterations;
 
-                    Debug.WriteLine("Iteration {0}", i);
+                    // Debug.WriteLine("Iteration {0}", i);
 
-                    for (var portion = 0; portion < portions; portion++)
+                    for (uint portion = 0; portion < portions; portion++)
                     {
                         if (_isStopped) break;
                         var portionStartSample = portion * samplesPerPortion;
                         var portionEndSample = (portion + 1) * samplesPerPortion - 1;
-                        Debug.WriteLine("Portion {0}: {1} - {2}", portion, portionStartSample, portionEndSample);
+                        // Debug.WriteLine("Portion {0}: {1} - {2}", portion, portionStartSample, portionEndSample);
 
-                        MapWaveform(leftColor, rightColor, leftChannel, rightChannel, inputSamplesCount,
+                        MapPortion(leftColor, rightColor, leftChannel, rightChannel, inputSamplesCount,
                             portionStartSample + iterationOffset,
                             portionEndSample, verticalScale, takeRate, texture);
                     }
@@ -144,12 +145,12 @@ namespace GraphicsLib
             var rightColor = (uint)parameters["rightColor"];
             var leftChannel = (float[])parameters["leftChannel"];
             var rightChannel = (float[])parameters["rightChannel"];
-            var samplesCount = (int)parameters["samplesCount"];
+            var samplesCount = (uint)parameters["samplesCount"];
             var verticalScale = (float)parameters["verticalScale"];
             var texture = (ITexture)parameters["texture"];
             var splitWorkFirst = (bool)parameters["splitWorkFirst"];
-            var portions = (int)parameters["portions"];
-            var iterations = (int)parameters["iterations"];
+            var portions = (uint)parameters["portions"];
+            var iterations = (uint)parameters["iterations"];
 
             MasterWaveformMapping(leftColor, rightColor, leftChannel, rightChannel, samplesCount,
                 0, samplesCount, verticalScale, portions, iterations, splitWorkFirst, texture);

@@ -10,7 +10,7 @@ namespace GraphicsLib
 
         public uint SizeX { get; }
         public uint SizeY { get; }
-        
+
         // SFML texture is RGBA, but DirectBitmap is ARGB, so it requires bytes mixing
 
         public CpuTexture(uint sizeX, uint sizeY)
@@ -44,12 +44,9 @@ namespace GraphicsLib
 
         public void Clear(uint color)
         {
-            for (uint i = 0; i < SizeX; i++)
+            for (uint j = 0; j < SizeY; j++)
             {
-                for (uint j = 0; j < SizeY; j++)
-                {
-                    this[i, j] = color;
-                }
+                WriteHorizontal(j, 0, SizeX - 1, color);
             }
         }
 
@@ -63,12 +60,14 @@ namespace GraphicsLib
             uint pixelStart = (y * SizeX + left) * 4;
             uint pixelEnd = (y * SizeX + right + 1) * 4;
 
+            byte[] pixels = Pixels;
+
             while (pixelStart < pixelEnd)
             {
-                Pixels[pixelStart + 0] = b1;
-                Pixels[pixelStart + 1] = b2;
-                Pixels[pixelStart + 2] = b3;
-                Pixels[pixelStart + 3] = b4;
+                pixels[pixelStart + 0] = b1;
+                pixels[pixelStart + 1] = b2;
+                pixels[pixelStart + 2] = b3;
+                pixels[pixelStart + 3] = b4;
                 pixelStart += 4;
             }
         }
@@ -82,12 +81,15 @@ namespace GraphicsLib
 
             uint pixelStart = (top * SizeX + x) * 4;
             uint pixelEnd = ((bottom + 1) * SizeX + x) * 4;
+            
+            byte[] pixels = Pixels;
+
             while (pixelStart < pixelEnd)
             {
-                Pixels[pixelStart + 0] = b1;
-                Pixels[pixelStart + 1] = b2;
-                Pixels[pixelStart + 2] = b3;
-                Pixels[pixelStart + 3] = b4;
+                pixels[pixelStart + 0] = b1;
+                pixels[pixelStart + 1] = b2;
+                pixels[pixelStart + 2] = b3;
+                pixels[pixelStart + 3] = b4;
                 pixelStart += SizeX * 4;
             }
         }

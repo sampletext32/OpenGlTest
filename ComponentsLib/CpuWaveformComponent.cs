@@ -20,12 +20,12 @@ namespace ComponentsLib
             waveformParameters["rightColor"] = 0xff4500FFu; //OrangeRed
             waveformParameters["leftChannel"] = MusicComponent.WavFile.ChannelsSamples[0];
             waveformParameters["rightChannel"] = MusicComponent.WavFile.ChannelsSamples[1];
-            waveformParameters["samplesCount"] = MusicComponent.WavFile.samplesCount;
+            waveformParameters["samplesCount"] = (uint)MusicComponent.WavFile.samplesCount;
             waveformParameters["verticalScale"] = 0.9f;
-            waveformParameters["takeRate"] = 3;
-            waveformParameters["iterations"] = 2;
+            waveformParameters["takeRate"] = 3u;
+            waveformParameters["iterations"] = 2u;
             waveformParameters["splitWorkFirst"] = true;
-            waveformParameters["portions"] = 10;
+            waveformParameters["portions"] = 10u;
 
             _waveformProvider?.Stop();
             _waveformProvider = new TrueWaveformProvider();
