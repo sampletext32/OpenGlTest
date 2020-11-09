@@ -22,10 +22,6 @@ namespace ComponentsLib
             waveformParameters["rightChannel"] = MusicComponent.WavFile.ChannelsSamples[1];
             waveformParameters["samplesCount"] = (uint)MusicComponent.WavFile.samplesCount;
             waveformParameters["verticalScale"] = 0.9f;
-            waveformParameters["takeRate"] = 3u;
-            waveformParameters["iterations"] = 2u;
-            waveformParameters["splitWorkFirst"] = true;
-            waveformParameters["portions"] = 10u;
 
             _waveformProvider?.Stop();
             _waveformProvider = new TrueWaveformProvider();

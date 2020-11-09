@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using AudioLib;
 using SFML.Audio;
 using SFML.System;
@@ -35,7 +36,9 @@ namespace ComponentsLib
         public float Duration => IsInited ? SfmlMusic.Duration.AsSeconds() : 0f;
 
         public byte[] WavBytes { get; private set; }
-        public WavFile WavFile { get; private set; }
+
+        public WavFile WavFile => LazyWavFile?.Value;
+        public Lazy<WavFile> LazyWavFile { get; private set; }
 
         public bool UpdateRequired { get; set; }
 
@@ -55,15 +58,13 @@ namespace ComponentsLib
         private void InnerInit(Stream wavStream)
         {
             WavBytes = new BinaryReader(wavStream).ReadBytes((int)wavStream.Length);
-            wavStream.Seek(0, SeekOrigin.Begin);
-            WavFile = new WavFile(wavStream);
+            LazyWavFile = new Lazy<WavFile>(()=> new WavFile(WavBytes));
         }
 
         private void InnerInit(byte[] wavBytes)
         {
             WavBytes = wavBytes;
-            WavFile = new WavFile(wavBytes);
-            SfmlMusic = new Music(wavBytes);
+            LazyWavFile = new Lazy<WavFile>(() => new WavFile(WavBytes));
         }
 
         public void Play()
