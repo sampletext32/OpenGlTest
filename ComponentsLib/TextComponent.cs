@@ -51,7 +51,7 @@ namespace ComponentsLib
                     }
                 }
                 UpdateRequired = false;
-                Debug.WriteLine($"{GetType()} Updated");
+                // Debug.WriteLine($"{GetType()} Updated");
             }
         }
 

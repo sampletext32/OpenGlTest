@@ -42,7 +42,7 @@ namespace ComponentsLib
 
                 SfmlTexture.Update(Texture.GetBytes());
                 UpdateRequired = false;
-                Debug.WriteLine($"{GetType()} Updated");
+                // Debug.WriteLine($"{GetType()} Updated");
             }
         }
 
