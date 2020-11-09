@@ -19,18 +19,22 @@ namespace GraphicsLib
             uint x, uint baseLineLeft, uint baseLineRight)
         {
             if (leftSample < 0)
-                for (var y = baseLineLeft; y < baseLineLeft - leftSample; y++)
-                    texture[x, y] = leftColor;
+            {
+                texture.WriteVertical(x, baseLineLeft, (uint)(baseLineLeft - leftSample), leftColor);
+            }
             else
-                for (var y = (uint)(baseLineLeft - leftSample); y < baseLineLeft; y++)
-                    texture[x, y] = leftColor;
+            {
+                texture.WriteVertical(x, (uint)(baseLineLeft - leftSample), baseLineLeft, leftColor);
+            }
 
             if (rightSample < 0)
-                for (var y = baseLineRight; y < baseLineRight - rightSample; y++)
-                    texture[x, y] = rightColor;
+            {
+                texture.WriteVertical(x, baseLineRight, (uint)(baseLineRight - rightSample), leftColor);
+            }
             else
-                for (var y = (uint)(baseLineRight - rightSample); y < baseLineRight; y++)
-                    texture[x, y] = rightColor;
+            {
+                texture.WriteVertical(x, (uint)(baseLineRight - rightSample), baseLineRight, leftColor);
+            }
         }
 
         private void MapWaveform(uint leftColor, uint rightColor,

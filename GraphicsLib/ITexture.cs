@@ -12,6 +12,8 @@ namespace GraphicsLib
 
         public uint this[uint x, uint y] { get; set; }
         public void Clear(uint color);
+        public void WriteHorizontal(uint y, uint left, uint right, uint color);
+        public void WriteVertical(uint x, uint top, uint bottom, uint color);
         public byte[] GetBytes();
     }
 }

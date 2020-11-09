@@ -10,24 +10,7 @@ namespace GraphicsLib
 
         public uint SizeX { get; }
         public uint SizeY { get; }
-
-        private object UpdateLocker = new object();
-        private bool UpdateRequired { get; set; } = true;
-
-        public Lazy<Texture> SfmlTexture { get; private set; }
-
-        public void UpdateSfmlTexture()
-        {
-            lock (UpdateLocker)
-            {
-                if (UpdateRequired)
-                {
-                    SfmlTexture.Value.Update(Pixels);
-                    UpdateRequired = false;
-                }
-            }
-        }
-
+        
         // SFML texture is RGBA, but DirectBitmap is ARGB, so it requires bytes mixing
 
         public CpuTexture(uint sizeX, uint sizeY)
@@ -35,7 +18,6 @@ namespace GraphicsLib
             SizeX = sizeX;
             SizeY = sizeY;
             Pixels = new byte[sizeX * sizeY * 4];
-            SfmlTexture = new Lazy<Texture>(() => new Texture(SizeX, SizeY));
         }
 
         // Get or sets one pixel on RGBA format
@@ -57,8 +39,6 @@ namespace GraphicsLib
                 Pixels[pixelStart + 1] = (byte)(value >> 16 & 0xff);
                 Pixels[pixelStart + 2] = (byte)(value >> 8 & 0xff);
                 Pixels[pixelStart + 3] = (byte)(value >> 0 & 0xff);
-
-                UpdateRequired = true;
             }
         }
 
@@ -70,6 +50,45 @@ namespace GraphicsLib
                 {
                     this[i, j] = color;
                 }
+            }
+        }
+
+        public void WriteHorizontal(uint y, uint left, uint right, uint color)
+        {
+            byte b1 = (byte)(color >> 24 & 0xff);
+            byte b2 = (byte)(color >> 16 & 0xff);
+            byte b3 = (byte)(color >> 8 & 0xff);
+            byte b4 = (byte)(color >> 0 & 0xff);
+
+            uint pixelStart = (y * SizeX + left) * 4;
+            uint pixelEnd = (y * SizeX + right + 1) * 4;
+
+            while (pixelStart < pixelEnd)
+            {
+                Pixels[pixelStart + 0] = b1;
+                Pixels[pixelStart + 1] = b2;
+                Pixels[pixelStart + 2] = b3;
+                Pixels[pixelStart + 3] = b4;
+                pixelStart += 4;
+            }
+        }
+
+        public void WriteVertical(uint x, uint top, uint bottom, uint color)
+        {
+            byte b1 = (byte)(color >> 24 & 0xff);
+            byte b2 = (byte)(color >> 16 & 0xff);
+            byte b3 = (byte)(color >> 8 & 0xff);
+            byte b4 = (byte)(color >> 0 & 0xff);
+
+            uint pixelStart = (top * SizeX + x) * 4;
+            uint pixelEnd = ((bottom + 1) * SizeX + x) * 4;
+            while (pixelStart < pixelEnd)
+            {
+                Pixels[pixelStart + 0] = b1;
+                Pixels[pixelStart + 1] = b2;
+                Pixels[pixelStart + 2] = b3;
+                Pixels[pixelStart + 3] = b4;
+                pixelStart += SizeX * 4;
             }
         }
 
