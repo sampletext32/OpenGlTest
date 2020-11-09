@@ -59,6 +59,8 @@ namespace GraphicsLib
 
                 WriteSample(texture, leftColor, rightColor, valueL, valueR, xPosition, verticalQuarter,
                     verticalThreeQuarters);
+
+                Notify?.Invoke();
             }
         }
 
@@ -153,5 +155,7 @@ namespace GraphicsLib
         {
             Task.Run(() => Recreate(parameters));
         }
+
+        public event Action Notify;
     }
 }

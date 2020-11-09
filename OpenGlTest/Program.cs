@@ -39,7 +39,7 @@ namespace OpenGlTest
 
             components = new List<Component>();
 
-            WaveformComponent waveformComponent = new WaveformComponent(0, 0, 800, 600);
+            WaveformComponent waveformComponent = new CpuWaveformComponent(0, 0, 800, 600);
             components.Add(waveformComponent);
 
             TextComponent textComponent = new TextComponent(0, 0, 150, 24);
