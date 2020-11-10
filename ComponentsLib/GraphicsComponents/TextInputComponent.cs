@@ -12,13 +12,14 @@ namespace ComponentsLib
 
         private bool IsCaretActive = false;
 
-        private ImageComponent BackgroundImageComponent { get; set; }
+        private ColorRectComponent BackgroundColorComponent { get; set; }
         private VerticalLineComponent BlinkVerticalLineComponent { get; set; }
 
         public TextInputComponent(uint locX, uint locY, uint sizeX, uint sizeY) : base(locX, locY, sizeX, sizeY)
         {
-            BackgroundImageComponent = new ImageComponent(locX, locY, sizeX, sizeY);
-            Components.Add(BackgroundImageComponent);
+            BackgroundColorComponent = new ColorRectComponent(locX, locY, sizeX, sizeY);
+            BackgroundColorComponent.Color = Color.White;
+            Components.Add(BackgroundColorComponent);
 
             BlinkVerticalLineComponent = new VerticalLineComponent(locX, locY, sizeY, Color.Black);
             Components.Add(BlinkVerticalLineComponent);
