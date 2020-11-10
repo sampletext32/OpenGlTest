@@ -32,7 +32,7 @@ namespace ComponentsLib
         {
             if (e.Button == Mouse.Button.Left)
             {
-                var musicComponent = NonDisplayableComponents.FirstOfType<MusicComponent>();
+                var musicComponent = NonRenderableComponents.FirstOfType<MusicComponent>();
                 musicComponent.TimeSeconds = (float)e.X / SfmlWindow.Size.X * musicComponent.Duration;
             }
         }
@@ -45,7 +45,7 @@ namespace ComponentsLib
             }
             else if (e.Code == Keyboard.Key.Space)
             {
-                var musicComponent = NonDisplayableComponents.FirstOfType<MusicComponent>();
+                var musicComponent = NonRenderableComponents.FirstOfType<MusicComponent>();
                 musicComponent.PlayPause();
             }
         }
@@ -53,8 +53,8 @@ namespace ComponentsLib
         protected override void InnerUpdate()
         {
             // TODO: Encapsulate music component inside vertical line
-            var musicComponent = NonDisplayableComponents.FirstOfType<MusicComponent>();
-            var verticalLineComponent = DisplayableComponents.FirstOfType<VerticalLineComponent>();
+            var musicComponent = NonRenderableComponents.FirstOfType<MusicComponent>();
+            var verticalLineComponent = RenderableComponents.FirstOfType<VerticalLineComponent>();
 
             verticalLineComponent.LocationX =
                 (uint)(musicComponent.TimeSeconds / musicComponent.Duration * SfmlWindow.Size.X);

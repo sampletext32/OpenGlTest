@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace ComponentsLib
 {
-    public class ComponentGroup<T> : IComponent where T : IComponent
+    public class ComponentGroup<T> where T : IComponent
     {
         public ComponentGroup()
         {
@@ -26,19 +26,23 @@ namespace ComponentsLib
             IsInited = true;
         }
 
+        public virtual void Resize(float scaleX, float scaleY)
+        {
+        }
+
         public void AddComponent(T component)
         {
             Components.Add(component);
         }
 
-        public virtual List<TK> OfType<TK>() where TK : T
+        public virtual List<TK> OfType<TK>() where TK : IComponent
         {
             return Components.Where(t => t.GetType() == typeof(TK)).Cast<TK>().ToList();
         }
 
-        public virtual TK FirstOfType<TK>() where TK : T
+        public virtual TK FirstOfType<TK>() where TK : class, IComponent
         {
-            return (TK)Components.FirstOrDefault(t => t.GetType() == typeof(TK));
+            return Components.FirstOrDefault(t => t.GetType() == typeof(TK)) as TK;
         }
     }
 }

@@ -23,12 +23,12 @@ namespace ComponentsLib
             SfmlWindow.KeyPressed += OnWindowKeyPressed;
             SfmlWindow.MouseButtonPressed += OnWindowMouseButtonPressed;
 
-            DisplayableComponents = new DisplayableComponentGroup(0, 0, Width, Height);
-            NonDisplayableComponents = new ComponentGroup<IComponent>();
+            RenderableComponents = new RenderableComponentGroup(0, 0, Width, Height);
+            NonRenderableComponents = new ComponentGroup<IComponent>();
         }
 
-        protected DisplayableComponentGroup DisplayableComponents { get; }
-        protected ComponentGroup<IComponent> NonDisplayableComponents { get; }
+        protected RenderableComponentGroup RenderableComponents { get; }
+        protected ComponentGroup<IComponent> NonRenderableComponents { get; }
 
         protected string Title { get; }
 
@@ -47,10 +47,10 @@ namespace ComponentsLib
 
         public void AddComponent(IComponent component)
         {
-            if (component is DisplayableComponent displayableComponent)
-                DisplayableComponents.AddComponent(displayableComponent);
+            if (component is IRenderableComponent displayableComponent)
+                RenderableComponents.AddComponent(displayableComponent);
             else
-                NonDisplayableComponents.AddComponent(component);
+                NonRenderableComponents.AddComponent(component);
         }
 
         protected virtual void OnWindowClosed(object sender, EventArgs e)
@@ -64,21 +64,17 @@ namespace ComponentsLib
             var scaleY = e.Height / SfmlWindow.GetView().Size.Y;
             SfmlWindow.Size = new Vector2u(e.Width, e.Height);
             SfmlWindow.SetView(new View(new FloatRect(0, 0, e.Width, e.Height)));
-            DisplayableComponents.Resize(scaleX, scaleY);
+            RenderableComponents.Resize(scaleX, scaleY);
         }
 
         protected virtual void InnerUpdate()
         {
         }
 
-        protected virtual void InnerRender(RenderTarget target)
-        {
-        }
-
         public virtual void Run()
         {
-            NonDisplayableComponents.Init();
-            DisplayableComponents.Init();
+            NonRenderableComponents.Init();
+            RenderableComponents.Init();
 
             var clock = new Clock();
 
@@ -92,11 +88,10 @@ namespace ComponentsLib
 
                 InnerUpdate();
 
-                DisplayableComponents.Update(dt);
-                NonDisplayableComponents.Update(dt);
+                RenderableComponents.Update(dt);
+                NonRenderableComponents.Update(dt);
 
-                InnerRender(SfmlWindow);
-                DisplayableComponents.Render(SfmlWindow);
+                RenderableComponents.Render(SfmlWindow);
                 SfmlWindow.Display();
             }
         }

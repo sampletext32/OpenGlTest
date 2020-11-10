@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics;
+using ComponentsLib.Basics;
 using SFML.Graphics;
 
 namespace ComponentsLib
 {
-    public class DisplayableComponent : IComponent
+    public class DisplayableComponent : IRenderableComponent
     {
         public DisplayableComponent(uint locX, uint locY, uint sizeX, uint sizeY)
         {

@@ -9,5 +9,7 @@
         public void Update(float dt);
 
         public void Init();
+
+        public void Resize(float scaleX, float scaleY);
     }
 }

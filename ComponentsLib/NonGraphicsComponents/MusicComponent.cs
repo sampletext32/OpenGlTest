@@ -55,10 +55,14 @@ namespace ComponentsLib
             IsInited = true;
         }
 
+        public void Resize(float scaleX, float scaleY)
+        {
+        }
+
         private void InnerInit(Stream wavStream)
         {
             WavBytes = new BinaryReader(wavStream).ReadBytes((int)wavStream.Length);
-            LazyWavFile = new Lazy<WavFile>(()=> new WavFile(WavBytes));
+            LazyWavFile = new Lazy<WavFile>(() => new WavFile(WavBytes));
         }
 
         private void InnerInit(byte[] wavBytes)

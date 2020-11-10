@@ -5,7 +5,7 @@ using SFML.Graphics;
 
 namespace ComponentsLib
 {
-    public class TextInputComponent : DisplayableComponentGroup
+    public class TextInputComponent : RenderableComponentGroup
     {
         private float BlinkTimeSec = 1f;
         private float Elapsed = 0f;
