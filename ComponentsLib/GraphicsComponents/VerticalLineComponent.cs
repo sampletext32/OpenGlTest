@@ -48,6 +48,7 @@ namespace ComponentsLib
             {
                 SfmlRect.Position = new Vector2f(LocationX, LocationY);
                 SfmlRect.FillColor = Color;
+                SfmlRect.Size = new Vector2f(1, SizeY);
                 UpdateRequired = false;
             }
         }
@@ -56,6 +57,12 @@ namespace ComponentsLib
         {
             base.Render(target);
             target.Draw(SfmlRect);
+        }
+
+        public override void Resize(float scaleX, float scaleY)
+        {
+            base.Resize(scaleX, scaleY);
+            UpdateRequired = true;
         }
     }
 }
