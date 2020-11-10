@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading;
 using AudioLib;
 using ComponentsLib;
 using GraphicsLib;
@@ -49,6 +51,11 @@ namespace OpenGlTest
         {
             // Test();
             // return;
+
+            AudioPlayerWindow audioPlayerWindow = new AudioPlayerWindow();
+            audioPlayerWindow.Run();
+            return;
+
             window = new RenderWindow(new VideoMode(AppWidth, AppHeight), "SFML running in .NET Core");
             window.Closed += (_, __) => window.Close();
             window.Resized += (_, e) =>
