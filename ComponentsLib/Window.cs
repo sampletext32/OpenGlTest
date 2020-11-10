@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -8,7 +7,10 @@ namespace ComponentsLib
 {
     public class Window
     {
-        public Window(uint width = 800, uint height = 600, string title = "Sfml Application")
+        private const uint AppWidth = 800;
+        private const uint AppHeight = 600;
+
+        public Window(uint width = AppWidth, uint height = AppHeight, string title = "Sfml Application")
         {
             Width = width;
             Height = height;
@@ -65,7 +67,13 @@ namespace ComponentsLib
             DisplayableComponents.Resize(scaleX, scaleY);
         }
 
-        protected virtual void InnerUpdate(){}
+        protected virtual void InnerUpdate()
+        {
+        }
+
+        protected virtual void InnerRender(RenderTarget target)
+        {
+        }
 
         public virtual void Run()
         {
@@ -81,12 +89,13 @@ namespace ComponentsLib
                 SfmlWindow.Clear(Color.Black);
 
                 var dt = clock.Restart().AsSeconds();
-                
+
                 InnerUpdate();
 
                 DisplayableComponents.Update(dt);
                 NonDisplayableComponents.Update(dt);
 
+                InnerRender(SfmlWindow);
                 DisplayableComponents.Render(SfmlWindow);
                 SfmlWindow.Display();
             }
