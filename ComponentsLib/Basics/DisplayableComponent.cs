@@ -22,6 +22,14 @@ namespace ComponentsLib
         public virtual bool UpdateRequired { get; set; }
         public bool IsInited { get; set; }
 
+        public virtual void ProcessMouseClick(uint x, uint y)
+        {
+        }
+
+        public virtual void ProcessKeyPress(string key, bool ctrl, bool alt, bool shift)
+        {
+        }
+
         public virtual void Update(float dt)
         {
         }

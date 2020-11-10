@@ -14,6 +14,15 @@
             Recreate();
         }
 
+        public override void ProcessMouseClick(uint x, uint y)
+        {
+            base.ProcessMouseClick(x, y);
+            if (IsInited)
+            {
+                MusicComponent.TimeSeconds = (float)x / SizeX * MusicComponent.Duration;
+            }
+        }
+
         protected abstract void Recreate();
 
         public override void Resize(float scaleX, float scaleY)

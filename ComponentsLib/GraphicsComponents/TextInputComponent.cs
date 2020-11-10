@@ -15,6 +15,8 @@ namespace ComponentsLib
         private ColorRectComponent BackgroundColorComponent { get; set; }
         private VerticalLineComponent BlinkVerticalLineComponent { get; set; }
 
+        private TextComponent DisplayedTextComponent { get; set; }
+
         public TextInputComponent(uint locX, uint locY, uint sizeX, uint sizeY) : base(locX, locY, sizeX, sizeY)
         {
             BackgroundColorComponent = new ColorRectComponent(locX, locY, sizeX, sizeY);
@@ -23,6 +25,9 @@ namespace ComponentsLib
 
             BlinkVerticalLineComponent = new VerticalLineComponent(locX, locY, sizeY, Color.Black);
             Components.Add(BlinkVerticalLineComponent);
+
+            DisplayedTextComponent = new TextComponent(0, 0, sizeX, sizeY);
+            Components.Add(DisplayedTextComponent);
         }
 
         public override void Update(float dt)
@@ -38,17 +43,34 @@ namespace ComponentsLib
 
         public override void Render(RenderTarget target)
         {
-            BackgroundImageComponent.Render(target);
+            BackgroundColorComponent.Render(target);
             if (IsCaretActive)
             {
                 BlinkVerticalLineComponent.Render(target);
             }
+            DisplayedTextComponent.Render(target);
         }
 
-        public override void Init()
+        public override void ProcessKeyPress(string key, bool ctrl, bool alt, bool shift)
         {
-            base.Init();
-            BackgroundImageComponent.MutateTexture(t => t.Clear(0xFFFFFFFFu));
+            base.ProcessKeyPress(key, ctrl, alt, shift);
+            if (key.Length == 1)
+            {
+                DisplayedTextComponent.Text += shift ? key.ToUpper() : key.ToLower();
+            }
+            else if (key == "Backspace")
+            {
+                string text = DisplayedTextComponent.Text;
+                if (text.Length > 0)
+                {
+                    text = text.Substring(0, text.Length - 1);
+                }
+
+                DisplayedTextComponent.Text = text;
+            }
+            var width = DisplayedTextComponent.MeasureSelfText();
+            BlinkVerticalLineComponent.LocationX = width;
+            UpdateRequired = true;
         }
     }
 }

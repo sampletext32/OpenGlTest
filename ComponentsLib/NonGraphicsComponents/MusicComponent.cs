@@ -44,6 +44,14 @@ namespace ComponentsLib
 
         public bool IsInited { get; set; }
 
+        public void ProcessKeyPress(string key, bool ctrl, bool alt, bool shift)
+        {
+            if (key == "Space")
+            {
+                PlayPause();
+            }
+        }
+
         public void Update(float dt)
         {
         }

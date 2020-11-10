@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace ComponentsLib
 {
-    public class ComponentGroup<T> where T : IComponent
+    public class ComponentGroup<T> : IComponent where T : IComponent
     {
         public ComponentGroup()
         {
@@ -14,6 +14,11 @@ namespace ComponentsLib
 
         public bool UpdateRequired { get; set; }
         public bool IsInited { get; set; }
+
+        public virtual void ProcessKeyPress(string key, bool ctrl, bool alt, bool shift)
+        {
+            Components.ForEach(c => c.ProcessKeyPress(key, ctrl, alt, shift));
+        }
 
         public virtual void Update(float dt)
         {

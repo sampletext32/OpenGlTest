@@ -18,5 +18,16 @@ namespace ComponentsLib
         {
             Components.ForEach(c => c.Resize(scaleX, scaleY));
         }
+
+
+        public virtual void ProcessMouseClick(uint x, uint y)
+        {
+            Components.ForEach(c => c.ProcessMouseClick(x, y));
+        }
+
+        public override void ProcessKeyPress(string key, bool ctrl, bool alt, bool shift)
+        {
+            Components.ForEach(c => c.ProcessKeyPress(key, ctrl, alt, shift));
+        }
     }
 }

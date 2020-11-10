@@ -28,28 +28,6 @@ namespace ComponentsLib
             SfmlWindow.SetActive(false);
         }
 
-        protected override void OnWindowMouseButtonPressed(object sender, MouseButtonEventArgs e)
-        {
-            if (e.Button == Mouse.Button.Left)
-            {
-                var musicComponent = NonRenderableComponents.FirstOfType<MusicComponent>();
-                musicComponent.TimeSeconds = (float)e.X / SfmlWindow.Size.X * musicComponent.Duration;
-            }
-        }
-
-        protected override void OnWindowKeyPressed(object sender, KeyEventArgs e)
-        {
-            if (e.Code == Keyboard.Key.Escape)
-            {
-                SfmlWindow.Close();
-            }
-            else if (e.Code == Keyboard.Key.Space)
-            {
-                var musicComponent = NonRenderableComponents.FirstOfType<MusicComponent>();
-                musicComponent.PlayPause();
-            }
-        }
-
         protected override void InnerUpdate()
         {
             // TODO: Encapsulate music component inside vertical line

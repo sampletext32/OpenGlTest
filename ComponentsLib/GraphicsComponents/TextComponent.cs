@@ -1,4 +1,5 @@
-﻿using SFML.Graphics;
+﻿using System;
+using SFML.Graphics;
 using SFML.System;
 
 namespace ComponentsLib
@@ -32,6 +33,17 @@ namespace ComponentsLib
             target.Draw(SfmlText);
         }
 
+        public uint MeasureSelfText()
+        {
+            var offset = 0f;
+            for (var i = 0; i < Text.Length; i++)
+            {
+                offset += SfmlText.Font.GetGlyph(Text[i], SfmlText.CharacterSize, false, 0f).Advance;
+            }
+
+            return (uint)MathF.Ceiling(offset);
+        }
+
         public override void Update(float dt)
         {
             base.Update(dt);
@@ -62,7 +74,7 @@ namespace ComponentsLib
             SfmlText = new Text(Text, f);
             SfmlText.CharacterSize = SizeY;
             SfmlText.Position = new Vector2f(LocationX, LocationY);
-            SfmlText.FillColor = Color.White;
+            SfmlText.FillColor = Color.Black;
         }
     }
 }

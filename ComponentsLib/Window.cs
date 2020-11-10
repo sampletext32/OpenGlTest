@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -39,10 +40,25 @@ namespace ComponentsLib
 
         protected virtual void OnWindowMouseButtonPressed(object sender, MouseButtonEventArgs e)
         {
+            if (e.X < 0 || e.Y < 0)
+            {
+                return;
+            }
+            RenderableComponents.ProcessMouseClick((uint)e.X, (uint)e.Y);
         }
 
         protected virtual void OnWindowKeyPressed(object sender, KeyEventArgs e)
         {
+            Debug.WriteLine($"Processing key {e.Code}");
+            if (e.Code == Keyboard.Key.Escape)
+            {
+                SfmlWindow.Close();
+            }
+            else
+            {
+                RenderableComponents.ProcessKeyPress(e.Code.ToString(), e.Control, e.Alt, e.Shift);
+                NonRenderableComponents.ProcessKeyPress(e.Code.ToString(), e.Control, e.Alt, e.Shift);
+            }
         }
 
         public void AddComponent(IComponent component)
