@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GraphicsLib\GraphicsLib.csproj" />
+    <ProjectReference Include="..\LoggerLib\LoggerLib.csproj" />
   </ItemGroup>
 
 </Project>

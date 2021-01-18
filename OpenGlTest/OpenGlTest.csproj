@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -47,6 +47,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AudioLib\AudioLib.csproj" />
     <ProjectReference Include="..\ComponentsLib\ComponentsLib.csproj" />
+    <ProjectReference Include="..\CustomMp3\CustomMp3.csproj" />
     <ProjectReference Include="..\GraphicsLib\GraphicsLib.csproj" />
   </ItemGroup>
 

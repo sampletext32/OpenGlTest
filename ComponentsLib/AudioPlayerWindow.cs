@@ -8,13 +8,13 @@ namespace ComponentsLib
 {
     public class AudioPlayerWindow : Window
     {
-        public AudioPlayerWindow()
+        public AudioPlayerWindow(string filename)
         {
             SfmlWindow.SetActive(true);
             WaveformComponent waveformComponent = new CpuWaveformComponent(0, 0, Width, Height);
             AddComponent(waveformComponent);
 
-            var musicComponent = new MusicComponent("file.mp3");
+            var musicComponent = new MusicComponent(filename);
             AddComponent(musicComponent);
 
             waveformComponent.MusicComponent = musicComponent;

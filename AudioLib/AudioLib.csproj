@@ -8,4 +8,8 @@
     <PackageReference Include="NAudio" Version="1.10.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LoggerLib\LoggerLib.csproj" />
+  </ItemGroup>
+
 </Project>

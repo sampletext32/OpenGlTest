@@ -74,7 +74,7 @@ namespace ComponentsLib
             SfmlText = new Text(Text, f);
             SfmlText.CharacterSize = SizeY;
             SfmlText.Position = new Vector2f(LocationX, LocationY);
-            SfmlText.FillColor = Color.Black;
+            SfmlText.FillColor = Color.White;
         }
     }
 }
